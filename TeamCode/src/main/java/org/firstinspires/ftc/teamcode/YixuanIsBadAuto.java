@@ -145,7 +145,7 @@ public class YixuanIsBadAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         Servo claw = hardwareMap.servo.get("claw");
-        claw.setPosition(0.71);
+        claw.setPosition(0.69);
         waitForStart();
         motorFrontLeft = (DcMotorEx) hardwareMap.dcMotor.get("frontLeft");
         motorBackLeft = (DcMotorEx) hardwareMap.dcMotor.get("backLeft");
