@@ -117,15 +117,16 @@ public class SoloTeleOrca extends LinearOpMode {
 //            }
 //
 //            hand.setPosition(handPos);
-            if (gamepad1.x) {
+            boolean Gamepad2X = gamepad1.x;
+            if (Gamepad2X) {
                 isOpen = !isOpen;
                 if (isOpen) {
                     claw.setPosition(0.88);
                 } else {
                     claw.setPosition(0.69);
                 }
+                sleep(75);
             }
-
 //            if (gamepad2.dpad_left) {
 //                handPos += 0.02;
 //            }

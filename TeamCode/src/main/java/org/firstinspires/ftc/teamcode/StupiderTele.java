@@ -84,13 +84,15 @@ public class StupiderTele extends LinearOpMode {
 //            }
 //
 //            hand.setPosition(handPos);
-            if (gamepad2.x) {
+            boolean Gamepad2X = gamepad2.x;
+            if (Gamepad2X) {
                 isOpen = !isOpen;
                 if (isOpen) {
                     claw.setPosition(0.88);
                 } else {
                     claw.setPosition(0.69);
                 }
+                sleep(75);
             }
 
 //            if (gamepad2.dpad_left) {
