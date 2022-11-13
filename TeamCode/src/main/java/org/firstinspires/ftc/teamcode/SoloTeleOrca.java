@@ -57,46 +57,15 @@ public class SoloTeleOrca extends LinearOpMode {
     public static final int ARM_MOTOR_SPPED_IN_RPM = 312;
     public static final double ARM_COUNTS_PER_DEGREE = COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO / 360;
     public static final double ARM_FULL_SPEED_IN_COUNTS = COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO * ARM_MOTOR_SPPED_IN_RPM;
-    DcMotorEx motorFrontLeft = (DcMotorEx) hardwareMap.dcMotor.get("frontLeft");
-    DcMotorEx motorBackLeft = (DcMotorEx) hardwareMap.dcMotor.get("backLeft");
-    DcMotorEx motorFrontRight = (DcMotorEx) hardwareMap.dcMotor.get("frontRight");
-    DcMotorEx motorBackRight = (DcMotorEx) hardwareMap.dcMotor.get("backRight");
-    DcMotorEx raise = (DcMotorEx) hardwareMap.dcMotor.get("raise");
-    public void setDrivingMotorMode(DcMotor.RunMode mode) {
-        motorFrontRight.setMode(mode);
-        motorFrontLeft.setMode(mode);
-        motorBackRight.setMode(mode);
-        motorBackLeft.setMode(mode);
-    }
-    public boolean isStillDriving() {
-        return motorFrontLeft.isBusy() || motorFrontRight.isBusy() || motorBackLeft.isBusy() || motorBackRight.isBusy();
-    }
-    protected void turn(int degrees, double speed) {
-        if(degrees == 0) return;
-        int direction = degrees / Math.abs(degrees);
-        int distanceInCounts = (int) (degrees * TURN_DISTANCE_PER_DEGREE * 1.35 * COUNTS_PER_MILLIMETER);
-        setDrivingMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorFrontRight.setTargetPosition(distanceInCounts);
-        motorFrontLeft.setTargetPosition(distanceInCounts);
-        motorBackRight.setTargetPosition(distanceInCounts);
-        motorBackLeft.setTargetPosition(distanceInCounts);
-        setDrivingMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorFrontRight.setVelocity(WHEEL_FULL_SPEED_IN_COUNTS * speed * direction);
-        motorFrontLeft.setVelocity(WHEEL_FULL_SPEED_IN_COUNTS * speed * direction);
-        motorBackRight.setVelocity(WHEEL_FULL_SPEED_IN_COUNTS * speed * direction);
-        motorBackLeft.setVelocity(WHEEL_FULL_SPEED_IN_COUNTS * speed * direction);
 
-        while (isStillDriving()) {
-            sleep(100);
-//            // telemetry.addData("Front right motor speed", motorFrontRight.getVelocity());
-//            // telemetry.addData("Front left motor speed", motorFrontLeft.getVelocity());
-//            // telemetry.addData("Back right speed", motorBackRight.getVelocity());
-//            // telemetry.addData("Back left speed", motorBackLeft.getVelocity());
-//            // telemetry.update()
-        }
-    }
+
     @Override
     public void runOpMode() throws InterruptedException {
+        DcMotorEx motorFrontLeft = (DcMotorEx) hardwareMap.dcMotor.get("frontLeft");
+        DcMotorEx motorBackLeft = (DcMotorEx) hardwareMap.dcMotor.get("backLeft");
+        DcMotorEx motorFrontRight = (DcMotorEx) hardwareMap.dcMotor.get("frontRight");
+        DcMotorEx motorBackRight = (DcMotorEx) hardwareMap.dcMotor.get("backRight");
+        DcMotorEx raise = (DcMotorEx) hardwareMap.dcMotor.get("raise");
 //        DistanceSensor distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
 //        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)distanceSensor;
         boolean runSlowMo = true;
@@ -194,11 +163,11 @@ public class SoloTeleOrca extends LinearOpMode {
 //            turn.setTargetPosition(targetTurn);
 //            turn.setVelocity(80 * (gamepad2.right_trigger-gamepad2.left_trigger));
             raise.setTargetPositionTolerance(100);
-            setDrivingMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+//            setDrivingMotorMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             double y = gamepad1.left_stick_x;
             double x = gamepad1.left_stick_y * 1.1; // Counteract imperfect strafing
             double rx = gamepad1.right_stick_x;
-            if (!gamepad1.left_bumper) {
+            if (true) {
                 if (x != 0 || y != 0) {
                     double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
                     double frontLeftPower = -(y + x+rx) / denominator; // -1
@@ -216,7 +185,7 @@ public class SoloTeleOrca extends LinearOpMode {
                     motorBackRight.setPower(-rx/2);
                 }
             } else {
-            turn(180,0.1);
+//            turn(180,0.1);
             }
             int currentRaisedPosition = raise.getCurrentPosition();
             telemetry.addData("armPos", currentRaisedPosition);

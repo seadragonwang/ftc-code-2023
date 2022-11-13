@@ -233,12 +233,22 @@ public class SleeverDetection extends LinearOpMode
         motorFrontRight = (DcMotorEx) hardwareMap.dcMotor.get("frontRight");
         motorBackRight = (DcMotorEx) hardwareMap.dcMotor.get("backRight");
         waitForStart();
-//        if (pipeline.getAnalysis() == SleeveDetectionPipeline.SkystonePosition.CENTER) {
+        if (pipeline.getAnalysis() == SleeveDetectionPipeline.SkystonePosition.CENTER) {
             driveDistance(100, 0.2);
             slide(150, 0.04);
             driveDistance(700, 0.2);
-            turn(-50, 0.1);
-//        }
+//            turn(-50, 0.1);
+        } else if (pipeline.getAnalysis() == SleeveDetectionPipeline.SkystonePosition.RIGHT) {
+            driveDistance(100, 0.2);
+            slide(840, 0.04);
+            turn(5, 0.1);
+            driveDistance(700, 0.2);
+        } else {
+            driveDistance(100, 0.2);
+            slide(-650, 0.04);
+            turn(-2, 0.1);
+            driveDistance(700, 0.2);
+        }
 //        while (opModeIsActive())
 //        {
 //            telemetry.addData("Analysis", pipeline.getAnalysis());
