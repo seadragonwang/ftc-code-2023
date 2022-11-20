@@ -30,6 +30,7 @@ public class StupiderTele extends LinearOpMode {
     public static final double ARM_FULL_SPEED_IN_COUNTS = COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO * ARM_MOTOR_SPPED_IN_RPM;
     @Override
     public void runOpMode() throws InterruptedException {
+
 //        DistanceSensor distanceSensor = hardwareMap.get(DistanceSensor.class, "distanceSensor");
 //        Rev2mDistanceSensor sensorTimeOfFlight = (Rev2mDistanceSensor)distanceSensor;
         boolean runSlowMo = true;
@@ -43,6 +44,7 @@ public class StupiderTele extends LinearOpMode {
         DcMotor motorFrontRight = hardwareMap.dcMotor.get("frontRight");
         DcMotor motorBackRight = hardwareMap.dcMotor.get("backRight");
         DcMotorEx raise = (DcMotorEx) hardwareMap.dcMotor.get("raise");
+
 //        Servo claw = hardwareMap.servo.get("claw");
 //        hand.setPosition(0.36);
 //        hand.setPosition(0.75);
@@ -52,6 +54,7 @@ public class StupiderTele extends LinearOpMode {
 
 //        DcMotorEx arm = hardwareMap.get(DcMotorEx.class, "arm"); // Minimum -2, Maximum -1272
         Servo claw = hardwareMap.servo.get("claw");
+        Servo claw2 = hardwareMap.servo.get("claw2");
 
 //        Servo grabber = hardwareMap.servo.get("grabber");
 
@@ -84,17 +87,13 @@ public class StupiderTele extends LinearOpMode {
 //            }
 //
 //            hand.setPosition(handPos);
-            boolean Gamepad2X = gamepad2.x;
-            if (Gamepad2X) {
-                isOpen = !isOpen;
-                if (isOpen) {
-                    claw.setPosition(0.88);
-                } else {
-                    claw.setPosition(0.69);
-                }
-                sleep(75);
+            if (gamepad2.x) {
+                claw.setPosition(1);
+                claw2.setPosition(0);
+            } else if (gamepad2.left_bumper) {
+                claw.setPosition(0.65);
+                claw2.setPosition(0.35);
             }
-
 //            if (gamepad2.dpad_left) {
 //                handPos += 0.02;
 //            }
@@ -110,6 +109,7 @@ public class StupiderTele extends LinearOpMode {
 //            } else {
 //                grabber.setPosition(-0.02);
 //            }
+
 
 
 //            int currentArmPosition = arm.getCurrentPosition();
@@ -134,13 +134,18 @@ public class StupiderTele extends LinearOpMode {
             raise.setTargetPositionTolerance(100);
             double y = gamepad1.left_stick_x;
             double x = gamepad1.left_stick_y * 1.1; // Counteract imperfect strafing
+            if (Math.abs(x) > Math.abs(y)) {
+                y = 0;
+            } else {
+                x = 0;
+            }
             double rx = gamepad1.right_stick_x;
             if (true) {
                 if (x != 0 || y != 0) {
                     double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-                    double frontLeftPower = -(y + x+rx) / denominator; // -1
+                    double frontLeftPower = -(y - x+rx) / denominator; // -1
                     double backLeftPower = -(-y - x+rx) / denominator; // 1
-                    double frontRightPower = (-y + x+rx) / denominator; // -1
+                    double frontRightPower = (-y - x+rx) / denominator; // -1
                     double backRightPower = (y - x+rx) / denominator; // 1
                     motorFrontLeft.setPower(frontLeftPower/2);
                     motorBackLeft.setPower(backLeftPower/2);

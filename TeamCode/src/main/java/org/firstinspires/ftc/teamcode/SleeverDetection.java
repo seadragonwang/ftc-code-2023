@@ -232,22 +232,27 @@ public class SleeverDetection extends LinearOpMode
         motorBackLeft = (DcMotorEx) hardwareMap.dcMotor.get("backLeft");
         motorFrontRight = (DcMotorEx) hardwareMap.dcMotor.get("frontRight");
         motorBackRight = (DcMotorEx) hardwareMap.dcMotor.get("backRight");
+        Servo claw = hardwareMap.servo.get("claw");
+        Servo claw2 = hardwareMap.servo.get("claw2");
+        claw.setPosition(0.72);
+        claw2.setPosition(0.32);
         waitForStart();
+//        sleep(2000);
         if (pipeline.getAnalysis() == SleeveDetectionPipeline.SkystonePosition.CENTER) {
             driveDistance(100, 0.2);
-            slide(150, 0.04);
+            slide(150, 0.01);
             driveDistance(700, 0.2);
 //            turn(-50, 0.1);
         } else if (pipeline.getAnalysis() == SleeveDetectionPipeline.SkystonePosition.RIGHT) {
             driveDistance(100, 0.2);
-            slide(840, 0.04);
-            turn(5, 0.1);
+            slide(940, 0.01);
+            turn(4, 0.1);
             driveDistance(700, 0.2);
         } else {
-            driveDistance(100, 0.2);
-            slide(-650, 0.04);
-            turn(-2, 0.1);
-            driveDistance(700, 0.2);
+            driveDistance(150, 0.2);
+            slide(-600, 0.01);
+            turn(-3, 0.1);
+            driveDistance(680, 0.2);
         }
 //        while (opModeIsActive())
 //        {
@@ -279,9 +284,9 @@ public class SleeverDetection extends LinearOpMode
         /*
          * The core values which define the location and size of the sample regions
          */
-        static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(246,236);
-        static final int REGION_WIDTH = 50;
-        static final int REGION_HEIGHT = 130;
+        static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(226,271);
+        static final int REGION_WIDTH = 46;
+        static final int REGION_HEIGHT = 112;
 
         /*
          * Points which actually define the sample region rectangles, derived from above values
@@ -361,23 +366,23 @@ public class SleeverDetection extends LinearOpMode
 //            inputToCb(firstFrame);
 
 
-//            final String TAG = "bitmap";
-//            Mat img = new Mat();
-//            String photoPath = "/storage/self/primary/FIRST/data/webcam-frame-9.jpg";
-////            BitmapFactory.Options options = new BitmapFactory.Options();
-////            options.inSampleSize = 8;
-//            final Bitmap bmp = BitmapFactory.decodeFile(photoPath);
-//            Utils.bitmapToMat(bmp, img);
+            final String TAG = "bitmap";
+            Mat img = new Mat();
+            String photoPath = "/storage/self/primary/FIRST/data/webcam-frame-9.jpg";
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inSampleSize = 8;
+            final Bitmap bmp = BitmapFactory.decodeFile(photoPath);
+            Utils.bitmapToMat(bmp, img);
             /*
              * Submats are a persistent reference to a region of the parent
              * buffer. Any changes to the child affect the parent, and the
              * reverse also holds true.
              */
 
-//            Bitmap bmp2 = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
-//            Utils.matToBitmap(firstFrame,bmp2);
-//            saveBitmap(bmp2);
-//            inputToYCrCb(firstFrame);
+            Bitmap bmp2 = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(firstFrame,bmp2);
+            saveBitmap(bmp2);
+            inputToYCrCb(firstFrame);
 //
 //            Core.extractChannel(YCrCb, R, 0);
 //            Core.extractChannel(YCrCb, G, 1);
@@ -427,15 +432,15 @@ public class SleeverDetection extends LinearOpMode
             /*
              * Get the Cb channel of the input frame after conversion to YCrCb
              */
-            if(! pictureTaken) {
+            if(true) {
                 avg = (int) Core.mean(input).val[0];
                 if (avg > 0) {
                     pictureTaken = Boolean.TRUE;
-//                    inputToYCrCb(input);
+                    inputToYCrCb(input);
                     Bitmap bmp2 = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
                     Utils.matToBitmap(input, bmp2);
                     saveBitmap(bmp2);
-                    inputToYCrCb(input);
+//                    inputToYCrCb(input);
 
                     Core.extractChannel(input, R, 0);
                     Core.extractChannel(input, G, 1);
