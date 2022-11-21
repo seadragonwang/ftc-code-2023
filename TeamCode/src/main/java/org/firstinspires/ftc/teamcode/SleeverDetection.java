@@ -85,7 +85,7 @@ public class SleeverDetection extends LinearOpMode
     public static final int DISTANCE_FROM_CAROUSAL_SPINNER_TO_RIGHT_DISTANCE_SENSOR = 100;
     public static final int DISTANCE_FROM_CAROUSAL_SPINNER_TO_FRONT_DISTANCE_SENSOR = 100;
     public static final double ANGLE_RATIO = 1.4;
-    public static final double SLIDE_RATIO = 1.2;
+    public static final double SLIDE_RATIO = 1;
     public static final double CHASSIS_RADIUS = 203;
     public static final double COUNTS_PER_ENCODER_REV = 28;
     public static final double WHEEL_GEAR_RATIO = 19.203208556149733;
@@ -127,8 +127,8 @@ public class SleeverDetection extends LinearOpMode
         int direction = distanceInMilliMeter / Math.abs(distanceInMilliMeter);
         int distanceInCounts = (int) (distanceInMilliMeter * COUNTS_PER_MILLIMETER);
         setDrivingMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorFrontRight.setTargetPosition(-distanceInCounts);
-        motorFrontLeft.setTargetPosition(distanceInCounts);
+        motorFrontRight.setTargetPosition(distanceInCounts);
+        motorFrontLeft.setTargetPosition(-distanceInCounts);
         motorBackRight.setTargetPosition(distanceInCounts);
         motorBackLeft.setTargetPosition(-distanceInCounts);
         setDrivingMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -371,18 +371,18 @@ public class SleeverDetection extends LinearOpMode
             String photoPath = "/storage/self/primary/FIRST/data/webcam-frame-9.jpg";
 //            BitmapFactory.Options options = new BitmapFactory.Options();
 //            options.inSampleSize = 8;
-            final Bitmap bmp = BitmapFactory.decodeFile(photoPath);
-            Utils.bitmapToMat(bmp, img);
-            /*
-             * Submats are a persistent reference to a region of the parent
-             * buffer. Any changes to the child affect the parent, and the
-             * reverse also holds true.
-             */
-
-            Bitmap bmp2 = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
-            Utils.matToBitmap(firstFrame,bmp2);
-            saveBitmap(bmp2);
-            inputToYCrCb(firstFrame);
+//            final Bitmap bmp = BitmapFactory.decodeFile(photoPath);
+//            Utils.bitmapToMat(bmp, img);
+//            /*
+//             * Submats are a persistent reference to a region of the parent
+//             * buffer. Any changes to the child affect the parent, and the
+//             * reverse also holds true.
+//             */
+//
+//            Bitmap bmp2 = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
+//            Utils.matToBitmap(firstFrame,bmp2);
+//            saveBitmap(bmp2);
+//            inputToYCrCb(firstFrame);
 //
 //            Core.extractChannel(YCrCb, R, 0);
 //            Core.extractChannel(YCrCb, G, 1);
