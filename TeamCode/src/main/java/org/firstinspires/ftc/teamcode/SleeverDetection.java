@@ -116,12 +116,7 @@ public class SleeverDetection extends LinearOpMode
     public boolean isStillDriving() {
         return motorFrontLeft.isBusy() || motorFrontRight.isBusy() || motorBackLeft.isBusy() || motorBackRight.isBusy();
     }
-    //    public void setDrivingMotorMode(DcMotor.RunMode mode) {
-//        motorFrontRight.setMode(mode);
-//        motorFrontLeft.setMode(mode);
-//        motorBackRight.setMode(mode);
-//        motorBackLeft.setMode(mode);
-//    }
+
     protected void driveDistance(int distanceInMilliMeter, double speed) {
         if(distanceInMilliMeter == 0) return;
         int direction = distanceInMilliMeter / Math.abs(distanceInMilliMeter);
