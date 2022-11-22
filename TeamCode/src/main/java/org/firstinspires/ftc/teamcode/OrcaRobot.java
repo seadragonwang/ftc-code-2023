@@ -29,19 +29,19 @@ public abstract class OrcaRobot extends LinearOpMode {
     public static final double WHEEL_FULL_SPEED_IN_COUNTS = COUNTS_PER_ENCODER_REV * WHEEL_GEAR_RATIO * WHEEL_MOTOR_SPEED_IN_RPM / 60;
     public static final int WHEEL_COUNTS_PER_MILLIMETER = (int) ((COUNTS_PER_ENCODER_REV * WHEEL_GEAR_RATIO) / (WHEEL_DIAMETER_MILLIMETTER * Math.PI));
     public static final double WHEEL_DISTANCE_PER_DEGREE = 4.05878;
-    public static final double ARM_GEAR_RATIO = 26.9;
-    public static final int ARM_MOTOR_SPEED_IN_RPM = 223;
+    public static final double ARM_GEAR_RATIO = 13.7;
+    public static final int ARM_MOTOR_SPEED_IN_RPM = 1150;
     public static final double PULLEY_DIAMETER_IN_MM = 35.65;
     public static final int ARM_COUNTS_PER_MILLIMETER = (int) ((COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO) / (PULLEY_DIAMETER_IN_MM * Math.PI));
     public static final double ARM_FULL_SPEED_IN_COUNTS = COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO * ARM_MOTOR_SPEED_IN_RPM / 60;
-    public static final int ARM_COUNTS_FOR_HIGH_JUNCTION = -(int) ((HIGH_JUNCTION_IN_MILLIMETER + 50) * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_MEDIUM_JUNCTION = -(int) ((MEDIUM_JUNCTION_IN_MILLIMETER+ 50) * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_LOW_JUNCTION = -(int) ((LOW_JUNCTION_IN_MILLIMETER+ 50) * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_FIVE_CONES = -(int) ((160+ 80) * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_FOUR_CONES = -(int) ((130+ 80) * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_THREE_CONES = -(int) ((100+ 80) * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_TWO_CONES = -(int) ((70+ 80) * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_ONE_CONES = -(int) ((40+ 80) * ARM_COUNTS_PER_MILLIMETER);
+    public static final int ARM_COUNTS_FOR_HIGH_JUNCTION = -(int) ((HIGH_JUNCTION_IN_MILLIMETER+50) * ARM_COUNTS_PER_MILLIMETER);
+    public static final int ARM_COUNTS_FOR_MEDIUM_JUNCTION = -(int) ((MEDIUM_JUNCTION_IN_MILLIMETER+50) * ARM_COUNTS_PER_MILLIMETER);
+    public static final int ARM_COUNTS_FOR_LOW_JUNCTION = -(int) ((LOW_JUNCTION_IN_MILLIMETER+50) * ARM_COUNTS_PER_MILLIMETER);
+    public static final int ARM_COUNTS_FOR_FIVE_CONES = -(int) (135 * ARM_COUNTS_PER_MILLIMETER);
+    public static final int ARM_COUNTS_FOR_FOUR_CONES = -(int) ((110) * ARM_COUNTS_PER_MILLIMETER);
+    public static final int ARM_COUNTS_FOR_THREE_CONES = -(int) (77 * ARM_COUNTS_PER_MILLIMETER);
+    public static final int ARM_COUNTS_FOR_TWO_CONES = -(int) (45 * ARM_COUNTS_PER_MILLIMETER);
+    public static final int ARM_COUNTS_FOR_ONE_CONES = -(int) (12 * ARM_COUNTS_PER_MILLIMETER);
     protected DcMotorEx motorFrontLeft;
     protected DcMotorEx motorBackLeft;
     protected DcMotorEx motorFrontRight;
@@ -71,126 +71,6 @@ public abstract class OrcaRobot extends LinearOpMode {
         raise = (DcMotorEx) hardwareMap.dcMotor.get("raise");
         claw = hardwareMap.servo.get("claw");
         claw2 = hardwareMap.servo.get("claw2");
-    }
-
-    /**
-     * Positive distanceInMilliMeter will move forward.
-     * @param distanceInMilliMeter
-     * @param speed
-     */
-    protected void driveDistance(int distanceInMilliMeter, double speed) {
-        if(distanceInMilliMeter == 0) return;
-        int distanceInCounts = (int) (distanceInMilliMeter * WHEEL_COUNTS_PER_MILLIMETER * 1.768);
-        setDrivingMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        int frCurrentPosition = motorFrontRight.getCurrentPosition();
-        int flCurrentPosition = motorFrontLeft.getCurrentPosition();
-        int brCurrentPosition = motorBackRight.getCurrentPosition();
-        int blCurrentPosition = motorBackLeft.getCurrentPosition();
-        int frTargetPosition = frCurrentPosition + distanceInCounts;
-        int flTargetPosition = flCurrentPosition + distanceInCounts*-1;
-        int brTargetPosition = brCurrentPosition + distanceInCounts;
-        int blTargetPosition = blCurrentPosition + distanceInCounts*-1;
-        motorFrontRight.setTargetPosition(frTargetPosition);
-        motorFrontLeft.setTargetPosition(flTargetPosition);
-        motorBackRight.setTargetPosition(brTargetPosition);
-        motorBackLeft.setTargetPosition(blTargetPosition);
-        setDrivingMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorFrontRight.setPower(speed);
-        motorFrontLeft.setPower(speed);
-        motorBackRight.setPower(speed);
-        motorBackLeft.setPower(speed);
-
-        while (opModeIsActive() && isStillDriving()) {
-            telemetry.addData("Front right motor pos", frCurrentPosition);
-            telemetry.addData("Front right motor pos", frTargetPosition);
-            telemetry.addData("Front left motor pos", flCurrentPosition);
-            telemetry.addData("Front left motor pos", flTargetPosition);
-            telemetry.addData("Back right pos", brCurrentPosition);
-            telemetry.addData("Back right pos", brTargetPosition);
-            telemetry.addData("Back left pos", blCurrentPosition);
-            telemetry.addData("Back left pos", blTargetPosition);
-            telemetry.update();
-            sleep(20);
-        }
-    }
-    /*
-    positive degrees turns CCW, negative degrees turns CW
-     */
-    protected void turn(int degree, double speed) {
-        if(degree == 0) return;
-        int distanceInCounts = (int) (degree * CHASSIS_DIAMETER_IN_MILLIMETER*Math.PI*WHEEL_COUNTS_PER_MILLIMETER * 2.518/360);
-        setDrivingMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        int frCurrentPosition = motorFrontRight.getCurrentPosition();
-        int flCurrentPosition = motorFrontLeft.getCurrentPosition();
-        int brCurrentPosition = motorBackRight.getCurrentPosition();
-        int blCurrentPosition = motorBackLeft.getCurrentPosition();
-        int frTargetPosition = frCurrentPosition + distanceInCounts;
-        int flTargetPosition = flCurrentPosition + distanceInCounts;
-        int brTargetPosition = brCurrentPosition + distanceInCounts;
-        int blTargetPosition = blCurrentPosition + distanceInCounts;
-        motorFrontRight.setTargetPosition(frTargetPosition);
-        motorFrontLeft.setTargetPosition(flTargetPosition);
-        motorBackRight.setTargetPosition(brTargetPosition);
-        motorBackLeft.setTargetPosition(blTargetPosition);
-        setDrivingMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorFrontRight.setPower(speed);
-        motorFrontLeft.setPower(speed);
-        motorBackRight.setPower(speed);
-        motorBackLeft.setPower(speed);
-
-        while (opModeIsActive() && isStillDriving()) {
-            telemetry.addData("Front right motor pos", frCurrentPosition);
-            telemetry.addData("Front right motor pos", frTargetPosition);
-            telemetry.addData("Front left motor pos", flCurrentPosition);
-            telemetry.addData("Front left motor pos", flTargetPosition);
-            telemetry.addData("Back right pos", brCurrentPosition);
-            telemetry.addData("Back right pos", brTargetPosition);
-            telemetry.addData("Back left pos", blCurrentPosition);
-            telemetry.addData("Back left pos", blTargetPosition);
-            telemetry.update();
-            sleep(20000);
-        }
-    }
-
-    /**
-     * Positive distanceInMilliMeter will slide to left.
-     * @param distanceInMilliMeter
-     * @param speed
-     */
-    protected void slide(int distanceInMilliMeter, double speed) {
-        if(distanceInMilliMeter == 0) return;
-        int distanceInCounts = (int) (distanceInMilliMeter * WHEEL_COUNTS_PER_MILLIMETER * 2.03);
-        setDrivingMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        int frCurrentPosition = motorFrontRight.getCurrentPosition();
-        int flCurrentPosition = motorFrontLeft.getCurrentPosition();
-        int brCurrentPosition = motorBackRight.getCurrentPosition();
-        int blCurrentPosition = motorBackLeft.getCurrentPosition();
-        int frTargetPosition = frCurrentPosition + distanceInCounts;
-        int flTargetPosition = flCurrentPosition + distanceInCounts;
-        int brTargetPosition = brCurrentPosition + distanceInCounts*-1;
-        int blTargetPosition = blCurrentPosition + distanceInCounts*-1;
-        motorFrontRight.setTargetPosition(frTargetPosition);
-        motorFrontLeft.setTargetPosition(flTargetPosition);
-        motorBackRight.setTargetPosition(brTargetPosition);
-        motorBackLeft.setTargetPosition(blTargetPosition);
-        setDrivingMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorFrontRight.setPower(speed);
-        motorFrontLeft.setPower(speed);
-        motorBackRight.setPower(speed);
-        motorBackLeft.setPower(speed);
-
-        while (opModeIsActive() && isStillDriving()) {
-            telemetry.addData("Front right motor pos", frCurrentPosition);
-            telemetry.addData("Front right motor pos", frTargetPosition);
-            telemetry.addData("Front left motor pos", flCurrentPosition);
-            telemetry.addData("Front left motor pos", flTargetPosition);
-            telemetry.addData("Back right pos", brCurrentPosition);
-            telemetry.addData("Back right pos", brTargetPosition);
-            telemetry.addData("Back left pos", blCurrentPosition);
-            telemetry.addData("Back left pos", blTargetPosition);
-            telemetry.update();
-            sleep(20);
-        }
     }
 
     public void setDrivingMotorMode(DcMotor.RunMode mode) {
