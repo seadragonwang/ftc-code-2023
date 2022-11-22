@@ -1,11 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
-import static com.qualcomm.hardware.bosch.BNO055IMU.SensorMode.IMU;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
-import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -13,12 +10,7 @@ import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.RobotLog;
 
-//import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -36,28 +28,14 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Locale;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-
 
 @Autonomous(name="HailongAuto")
 public class OrcaAuto extends OrcaRobot{
-    public BNO055IMU gyro;
     private final File captureDirectory = AppUtil.ROBOT_DATA_DIR;
     private SleeverDetection.SleeveDetectionPipeline pipeline;
     private OpenCvCamera webcam;
 //    protected GyroSensor gyro;
 
-
-public double roundAngle(double angle){
-    if(angle > 180){
-        return angle - 360;
-    }else if(angle < -180){
-        return 360 + angle;
-    }else{
-        return angle;
-    }
-}
     @Override
     protected void setup(){
         super.setup();
@@ -97,14 +75,12 @@ public double roundAngle(double angle){
     }
 
     protected void raiseSlider1(int targetPos){
-
         raise.setTargetPosition(targetPos);
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
         while (raise.isBusy()) {
             slide(-170, 0.5);
-            turn((int) roundAngle(gyro.getAngularOrientation().firstAngle), 0.05);
-            driveDistance(1640, 0.5);
+            driveDistance(1680, 0.5);
         }
     }
 
@@ -114,19 +90,6 @@ public double roundAngle(double angle){
 
         setup();
         closeClaw();
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled      = true;
-        parameters.loggingTag          = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
-        // and named "imu".
-        gyro = hardwareMap.get(BNO055IMU.class, "gyro");
-        gyro.initialize(parameters);
         raise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         waitForStart();

@@ -27,16 +27,16 @@ public class StupiderTele extends LinearOpMode {
     public static float LOW_JUNCTION_IN_MILLIMETER = 342.9f;
 
     // pulley circumference is 112 mm
-    public static final double ARM_GEAR_RATIO = 26.9;
+    public static final double ARM_GEAR_RATIO = 13.7;
+    public static final int ARM_MOTOR_SPEED_IN_RPM = 435;
     public static final double WHEEL_DIAMETER_MILLIMETTER = 96;
     public static final int WHEEL_MOTOR_SPPED_IN_RPM = 312;
-    public static final int ARM_MOTOR_SPPED_IN_RPM = 223;
     public static final double PULLEY_DIAMETER_IN_MM = 35.65;
     public static final double ARM_COUNTS_PER_MILLIMETER = (COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO)/(PULLEY_DIAMETER_IN_MM * Math.PI);
-    public static final double ARM_FULL_SPEED_IN_COUNTS = COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO * ARM_MOTOR_SPPED_IN_RPM / 60;
-    public static final int ARM_COUNTS_FOR_HIGH_JUNCTION = -(int)(HIGH_JUNCTION_IN_MILLIMETER * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_MEDIUM_JUNCTION = -(int)(MEDIUM_JUNCTION_IN_MILLIMETER * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_LOW_JUNCTION = -(int)(LOW_JUNCTION_IN_MILLIMETER * ARM_COUNTS_PER_MILLIMETER);
+    public static final double ARM_FULL_SPEED_IN_COUNTS = COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO * ARM_MOTOR_SPEED_IN_RPM / 60;
+    public static final int ARM_COUNTS_FOR_HIGH_JUNCTION = -(int) ((HIGH_JUNCTION_IN_MILLIMETER+50) * ARM_COUNTS_PER_MILLIMETER);
+    public static final int ARM_COUNTS_FOR_MEDIUM_JUNCTION = -(int) ((MEDIUM_JUNCTION_IN_MILLIMETER+50) * ARM_COUNTS_PER_MILLIMETER);
+    public static final int ARM_COUNTS_FOR_LOW_JUNCTION = -(int) ((LOW_JUNCTION_IN_MILLIMETER+50) * ARM_COUNTS_PER_MILLIMETER);
     private DcMotor motorFrontLeft;
     DcMotor motorBackLeft;
     DcMotor motorFrontRight;
@@ -159,19 +159,19 @@ public class StupiderTele extends LinearOpMode {
             telemetry.addData("armPos", currentRaisedPosition);
             int raiseStep = 0;
             if(gamepad2.dpad_down) {
-                raiseStep = 200;
+                raiseStep = 100;
             } else if (gamepad2.dpad_up) {
-                raiseStep = -200;
+                raiseStep = -100;
             } else {
                 raiseStep = 0;
             }
             int targetRaise = currentRaisedPosition;
             if (gamepad2.y) { // assuming bottom is 0, negative is up
-                targetRaise = ARM_COUNTS_FOR_LOW_JUNCTION + 100;
+                targetRaise = ARM_COUNTS_FOR_LOW_JUNCTION;
             } else if (gamepad2.a) {
-                targetRaise = ARM_COUNTS_FOR_HIGH_JUNCTION + 100;
+                targetRaise = ARM_COUNTS_FOR_HIGH_JUNCTION;
             } else if (gamepad2.b) {
-                targetRaise = ARM_COUNTS_FOR_MEDIUM_JUNCTION + 100;
+                targetRaise = ARM_COUNTS_FOR_MEDIUM_JUNCTION;
             } else if (gamepad2.right_bumper){
                 targetRaise = 0;
             } else {
