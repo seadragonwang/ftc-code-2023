@@ -3,14 +3,20 @@ package org.firstinspires.ftc.teamcode;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.opencv.android.Utils;
 import org.opencv.core.Core;
@@ -32,15 +38,40 @@ import java.util.Locale;
 @Autonomous(name="HailongAuto")
 public class OrcaAuto extends OrcaRobot{
     private final File captureDirectory = AppUtil.ROBOT_DATA_DIR;
-    private SleeverDetection.SleeveDetectionPipeline pipeline;
-    private OpenCvCamera webcam;
-//    protected GyroSensor gyro;
+    // Define the Proportional control coefficient (or GAIN) for "heading control".
+    // We define one value when Turning (larger errors), and the other is used when Driving straight (smaller errors).
+    // Increase these numbers if the heading does not corrects strongly enough (eg: a heavy robot or using tracks)
+    // Decrease these numbers if the heading does not settle on the correct value (eg: very agile robot with omni wheels)
+    static final double     P_TURN_GAIN            = 0.02;     // Larger is more responsive, but also less stable
+    static final double     P_DRIVE_GAIN           = 0.03;     // Larger is more responsive, but also less stable
+    static final double     DRIVE_SPEED             = 0.6;     // Max driving speed for better distance accuracy.
+    static final double     TURN_SPEED              = 0.6;     // Max Turn speed to limit turn rate
+    static final double     HEADING_THRESHOLD       = 2.0 ;    // How close must the heading get to the target before moving to next step.
+
+    private SleeverDetection.SleeveDetectionPipeline pipeline   = null;
+    private OpenCvCamera    webcam        = null;
+    private BNO055IMU       imu           = null;      // Control/Expansion Hub IMU
+    private double          robotHeading  = 0;
+    private double          headingOffset = 0;
+    private double          headingError  = 0;
+    private double          targetHeading = 0;
+    private double  driveSpeed    = 0;
+    private double  turnSpeed     = 0;
+    private double  leftSpeed     = 0;
+    private double  rightSpeed    = 0;
 
     @Override
     protected void setup(){
         super.setup();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        pipeline = new SleeverDetection.SleeveDetectionPipeline();
+        webcam.setPipeline(pipeline);
+        // define initialization values for IMU, and then initialize it.
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
 
         // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
         // out when the RC activity is in portrait. We do our actual image processing assuming
@@ -62,32 +93,227 @@ public class OrcaAuto extends OrcaRobot{
         });
     }
 
-    protected void raiseSlider2(int targetPos){
-        raise.setTargetPosition(targetPos);
-        raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        raise.setPower(1.0);
-        while (raise.isBusy()) {
-            driveDistance(-300, 0.5);
-            turn(180, 0.5);
-            slide(500, 0.5);
+    /**
+     * read the raw (un-offset Gyro heading) directly from the IMU
+     */
+    public double getRawHeading() {
+        Orientation angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        return angles.firstAngle;
+    }
 
+    /**
+     * This method uses a Proportional Controller to determine how much steering correction is required.
+     *
+     * @param desiredHeading        The desired absolute heading (relative to last heading reset)
+     * @param proportionalGain      Gain factor applied to heading error to obtain turning power.
+     * @return                      Turning power needed to get to required heading.
+     */
+    public double getSteeringCorrection(double desiredHeading, double proportionalGain) {
+        targetHeading = desiredHeading;  // Save for telemetry
+
+        // Get the robot heading by applying an offset to the IMU heading
+        robotHeading = getRawHeading() - headingOffset;
+
+        // Determine the heading current error
+        headingError = targetHeading - robotHeading;
+
+        // Normalize the error to be within +/- 180 degrees
+        while (headingError > 180)  headingError -= 360;
+        while (headingError <= -180) headingError += 360;
+
+        // Multiply the error by the gain to determine the required steering correction/  Limit the result to +/- 1.0
+        return Range.clip(headingError * proportionalGain, -1, 1);
+    }
+
+    /**
+     * This method takes separate drive (fwd/rev) and turn (right/left) requests,
+     * combines them, and applies the appropriate speed commands to the left and right wheel motors.
+     * @param turn  clockwise turning motor speed.
+     */
+    public void moveRobot(double drive, double turn) {
+        driveSpeed = drive;     // save this value as a class member so it can be used by telemetry.
+        turnSpeed  = turn;      // save this value as a class member so it can be used by telemetry.
+
+        leftSpeed  = drive - turn;
+        rightSpeed = drive + turn;
+
+        // Scale speeds down if either one exceeds +/- 1.0;
+        double max = Math.max(Math.abs(leftSpeed), Math.abs(rightSpeed));
+        if (max > 1.0)
+        {
+            leftSpeed /= max;
+            rightSpeed /= max;
+        }
+
+        motorFrontLeft.setPower(leftSpeed);
+        motorBackLeft.setPower(leftSpeed);
+
+        motorFrontRight.setPower(rightSpeed);
+        motorBackRight.setPower(rightSpeed);
+    }
+
+
+    /**
+     * Positive distanceInMilliMeter will move forward.
+     * @param distanceInMilliMeter
+     * @param speed
+     */
+    protected void driveDistance(int distanceInMilliMeter, double speed, double heading) {
+        if(distanceInMilliMeter == 0) return;
+        int distanceInCounts = (int) (distanceInMilliMeter * WHEEL_COUNTS_PER_MILLIMETER * 1.768);
+        setDrivingMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        int frCurrentPosition = motorFrontRight.getCurrentPosition();
+        int flCurrentPosition = motorFrontLeft.getCurrentPosition();
+        int brCurrentPosition = motorBackRight.getCurrentPosition();
+        int blCurrentPosition = motorBackLeft.getCurrentPosition();
+        int frTargetPosition = frCurrentPosition + distanceInCounts;
+        int flTargetPosition = flCurrentPosition + distanceInCounts*-1;
+        int brTargetPosition = brCurrentPosition + distanceInCounts;
+        int blTargetPosition = blCurrentPosition + distanceInCounts*-1;
+        motorFrontRight.setTargetPosition(frTargetPosition);
+        motorFrontLeft.setTargetPosition(flTargetPosition);
+        motorBackRight.setTargetPosition(brTargetPosition);
+        motorBackLeft.setTargetPosition(blTargetPosition);
+        setDrivingMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorFrontRight.setPower(speed);
+        motorFrontLeft.setPower(speed);
+        motorBackRight.setPower(speed);
+        motorBackLeft.setPower(speed);
+
+        while (opModeIsActive() && isStillDriving()) {
+            turnSpeed = getSteeringCorrection(heading, P_DRIVE_GAIN);
+
+            // if driving in reverse, the motor correction also needs to be reversed
+            if (distanceInMilliMeter < 0)
+                turnSpeed *= -1.0;
+
+            // Apply the turning correction to the current driving speed.
+            moveRobot(speed, turnSpeed);
+            sendTelemetry();
         }
     }
 
+    /**
+     * Positive distanceInMilliMeter will slide to left.
+     * @param distanceInMilliMeter
+     * @param speed
+     */
+    protected void slide(int distanceInMilliMeter, double speed, double heading) {
+        if(distanceInMilliMeter == 0) return;
+        int distanceInCounts = (int) (distanceInMilliMeter * WHEEL_COUNTS_PER_MILLIMETER * 2.03);
+        setDrivingMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        int frCurrentPosition = motorFrontRight.getCurrentPosition();
+        int flCurrentPosition = motorFrontLeft.getCurrentPosition();
+        int brCurrentPosition = motorBackRight.getCurrentPosition();
+        int blCurrentPosition = motorBackLeft.getCurrentPosition();
+        int frTargetPosition = frCurrentPosition + distanceInCounts;
+        int flTargetPosition = flCurrentPosition + distanceInCounts;
+        int brTargetPosition = brCurrentPosition + distanceInCounts*-1;
+        int blTargetPosition = blCurrentPosition + distanceInCounts*-1;
+        motorFrontRight.setTargetPosition(frTargetPosition);
+        motorFrontLeft.setTargetPosition(flTargetPosition);
+        motorBackRight.setTargetPosition(brTargetPosition);
+        motorBackLeft.setTargetPosition(blTargetPosition);
+        setDrivingMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorFrontRight.setPower(speed);
+        motorFrontLeft.setPower(speed);
+        motorBackRight.setPower(speed);
+        motorBackLeft.setPower(speed);
+
+        while (opModeIsActive() && isStillDriving()) {
+            // Determine required steering to keep on heading
+            turnSpeed = getSteeringCorrection(heading, P_DRIVE_GAIN);
+
+            // if driving in reverse, the motor correction also needs to be reversed
+            if (distanceInMilliMeter < 0)
+                turnSpeed *= -1.0;
+
+            // Apply the turning correction to the current driving speed.
+            moveRobot(speed, turnSpeed);
+            sendTelemetry();
+        }
+    }
+
+    /**
+     * positive degrees turns CCW, negative degrees turns CW
+     */
+    protected void turn(int degree, double speed) {
+        if(degree == 0) return;
+        int distanceInCounts = (int) (degree * CHASSIS_DIAMETER_IN_MILLIMETER*Math.PI*WHEEL_COUNTS_PER_MILLIMETER * 2.518/360);
+        setDrivingMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        int frCurrentPosition = motorFrontRight.getCurrentPosition();
+        int flCurrentPosition = motorFrontLeft.getCurrentPosition();
+        int brCurrentPosition = motorBackRight.getCurrentPosition();
+        int blCurrentPosition = motorBackLeft.getCurrentPosition();
+        int frTargetPosition = frCurrentPosition + distanceInCounts;
+        int flTargetPosition = flCurrentPosition + distanceInCounts;
+        int brTargetPosition = brCurrentPosition + distanceInCounts;
+        int blTargetPosition = blCurrentPosition + distanceInCounts;
+        motorFrontRight.setTargetPosition(frTargetPosition);
+        motorFrontLeft.setTargetPosition(flTargetPosition);
+        motorBackRight.setTargetPosition(brTargetPosition);
+        motorBackLeft.setTargetPosition(blTargetPosition);
+        setDrivingMotorMode(DcMotor.RunMode.RUN_TO_POSITION);
+        motorFrontRight.setPower(speed);
+        motorFrontLeft.setPower(speed);
+        motorBackRight.setPower(speed);
+        motorBackLeft.setPower(speed);
+
+        while (opModeIsActive() && isStillDriving()) {
+            // Determine required steering to keep on heading
+            turnSpeed = getSteeringCorrection(180, P_TURN_GAIN);
+
+            // Clip the speed to the maximum permitted value.
+            turnSpeed = Range.clip(turnSpeed, -speed, speed);
+
+            // Pivot in place by applying the turning correction
+            moveRobot(0, turnSpeed);
+            sendTelemetry();
+        }
+    }
     protected void raiseSlider1(int targetPos){
         raise.setTargetPosition(targetPos);
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
         while (raise.isBusy()) {
-            slide(-170, 0.5);
-            driveDistance(1680, 0.5);
+            slide(-160, DRIVE_SPEED, 0);
+            driveDistance(1635, DRIVE_SPEED, 0);
         }
     }
 
-    @Override
-    public void runOpMode()
-    {
+    protected void raiseSlider2(int targetPos){
+        raise.setTargetPosition(targetPos);
+        raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        raise.setPower(1.0);
+        while (raise.isBusy()) {
+            driveDistance(-300, DRIVE_SPEED, 0);
+            turn(180, TURN_SPEED);
+            slide(480, DRIVE_SPEED, 180);
+        }
+    }
 
+    protected void raiseSlider3(int targetPos){
+        raise.setTargetPosition(targetPos);
+        raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        raise.setPower(1.0);
+        while (raise.isBusy()) {
+            sleep(100);
+        }
+    }
+
+    /**
+     *  Display the various control parameters while driving
+     *
+     */
+    private void sendTelemetry() {
+        telemetry.addData("Angle Target:Current", "%5.2f:%5.0f", targetHeading, robotHeading);
+        telemetry.addData("Error:Steer",  "%5.1f:%5.1f", headingError, turnSpeed);
+        telemetry.addData("Wheel Speeds L:R.", "%5.2f : %5.2f", leftSpeed, rightSpeed);
+        telemetry.update();
+    }
+
+    @Override
+    public void runOpMode() {
         setup();
         closeClaw();
         raise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -95,9 +321,17 @@ public class OrcaAuto extends OrcaRobot{
         waitForStart();
         if (opModeIsActive()) {
             raiseSlider1(ARM_COUNTS_FOR_HIGH_JUNCTION);
+
             openClaw();
-            slide(-50, 0.5);
             raiseSlider2(ARM_COUNTS_FOR_FIVE_CONES);
+            closeClaw();
+            sleep(400);
+            raiseSlider3(ARM_COUNTS_FOR_LOW_JUNCTION);
+            turn(-90, TURN_SPEED);
+            driveDistance(320, DRIVE_SPEED, -90);
+            openClaw();
+            sleep(200);
+            raiseSlider3(0);
         }
 
 //        if (pipeline.getAnalysis() == SleeverDetection.SleeveDetectionPipeline.SkystonePosition.CENTER) {
@@ -303,9 +537,9 @@ public class OrcaAuto extends OrcaRobot{
                     region_r = R.submat(new Rect(region_pointA, region_pointB));
                     region_g = G.submat(new Rect(region_pointA, region_pointB));
                     region_b = B.submat(new Rect(region_pointA, region_pointB));
-//            Bitmap bmp3 = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
-//            Utils.matToBitmap(input,bmp3);
-//            saveBitmap(bmp3);
+            Bitmap bmp3 = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
+            Utils.matToBitmap(input,bmp3);
+            saveBitmap(bmp3);
                     /*
                      * Compute the average pixel value of each submat region. We're
                      * taking the average of a single channel buffer, so the value

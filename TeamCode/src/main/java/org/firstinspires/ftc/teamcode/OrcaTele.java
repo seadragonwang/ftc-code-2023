@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name="OrcaTele",group="")
 public class OrcaTele extends OrcaRobot {
+    static final double     DRIVE_SPEED             = 0.6;     // Max driving speed for better distance accuracy.
 
     /**
      * Power is positive, robot will slide left, otherwise slide right
@@ -40,7 +41,7 @@ public class OrcaTele extends OrcaRobot {
         double y = gamepad1.left_stick_y; // Counteract imperfect strafing
         if (gamepad2.x) {
             openClaw();
-            sleep(50);
+            sleep(100);
             raiseSlider(0);
         } else if (gamepad2.left_bumper) {
             closeClaw();
@@ -53,13 +54,13 @@ public class OrcaTele extends OrcaRobot {
         double rx = gamepad1.right_stick_x;
 
         if(gamepad1.x){
-            slideByPower(0.5);
+            slideByPower(DRIVE_SPEED);
         }else if(gamepad1.b){
-            slideByPower(-0.5);
+            slideByPower(-DRIVE_SPEED);
         }else if(gamepad1.y){
-            driveByPower(0.5);
+            driveByPower(DRIVE_SPEED);
         }else if(gamepad1.a){
-            driveByPower(-0.5);
+            driveByPower(-DRIVE_SPEED);
         }else{
             driveByPower(0);
         }
@@ -68,9 +69,9 @@ public class OrcaTele extends OrcaRobot {
                 turnByPower(rx);
             }
         } else if (x != 0) {
-            slideByPower(-x/2);
+            slideByPower(-x*DRIVE_SPEED);
         } else {
-            driveByPower(-y/2);
+            driveByPower(-y*DRIVE_SPEED);
         }
     }
 
@@ -102,9 +103,9 @@ public class OrcaTele extends OrcaRobot {
             telemetry.addData("armPos", currentRaisedPosition);
             int raiseStep = 0;
             if(gamepad2.dpad_down) {
-                raiseStep = 200;
+                raiseStep = 100;
             } else if (gamepad2.dpad_up) {
-                raiseStep = -200;
+                raiseStep = -100;
             } else {
                 raiseStep = 0;
             }
