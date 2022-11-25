@@ -25,8 +25,7 @@ import java.util.Locale;
 @Autonomous(name="OrcaLeftAuto")
 public class OrcaLeftAuto extends OrcaAutoBase {
     private final File captureDirectory = AppUtil.ROBOT_DATA_DIR;
-    private OrcaAutoBase.SleeveDetectionPipeline pipeline;
-    private OpenCvCamera webcam;
+
 //    protected GyroSensor gyro;
 
 
@@ -51,7 +50,7 @@ public class OrcaLeftAuto extends OrcaAutoBase {
 
         }
     }
-    protected void prepareToPark(int targetPos, OrcaAutoBase.SleeveDetectionPipeline.SkystonePosition position){
+    protected void prepareToPark(int targetPos, SleevePosition position){
         raise.setTargetPosition(targetPos);
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
@@ -63,15 +62,15 @@ public class OrcaLeftAuto extends OrcaAutoBase {
 
         }
         driveDistance(1000, 0.6,180);
-        if (position == OrcaAutoBase.SleeveDetectionPipeline.SkystonePosition.LEFT) {
+        if (position == SleevePosition.LEFT) {
             slide(-550, 0.6, 90);
-        } else if (position == OrcaAutoBase.SleeveDetectionPipeline.SkystonePosition.RIGHT) {
+        } else if (position == SleevePosition.RIGHT) {
             slide(500, 0.6, -90);
         }
         openClaw();
     }
 
-    protected void raiseSlider1(int targetPos, OrcaAutoBase.SleeveDetectionPipeline.SkystonePosition position){
+    protected void raiseSlider1(int targetPos, SleevePosition position){
         raise.setTargetPosition(targetPos);
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
