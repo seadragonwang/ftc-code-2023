@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -31,7 +30,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Locale;
 
-public abstract class OrcaAutoBsse extends OrcaRobot {
+public abstract class OrcaAutoBase extends OrcaRobot {
     // Define the Proportional control coefficient (or GAIN) for "heading control".
     // We define one value when Turning (larger errors), and the other is used when Driving straight (smaller errors).
     // Increase these numbers if the heading does not corrects strongly enough (eg: a heavy robot or using tracks)
@@ -42,7 +41,7 @@ public abstract class OrcaAutoBsse extends OrcaRobot {
     static final double     TURN_SPEED              = 0.6;     // Max Turn speed to limit turn rate
     static final double     HEADING_THRESHOLD       = 2.0 ;    // How close must the heading get to the target before moving to next step.
     private final File captureDirectory = AppUtil.ROBOT_DATA_DIR;
-    private OrcaAutoBsse.SleeveDetectionPipeline pipeline   = null;
+    private OrcaAutoBase.SleeveDetectionPipeline pipeline   = null;
     private OpenCvCamera    webcam        = null;
     private BNO055IMU       imu           = null;      // Control/Expansion Hub IMU
     private double          robotHeading  = 0;
@@ -59,14 +58,12 @@ public abstract class OrcaAutoBsse extends OrcaRobot {
         super.setup();
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
-        pipeline = new OrcaAutoBsse.SleeveDetectionPipeline();
-        webcam.setPipeline(pipeline);
+
         // define initialization values for IMU, and then initialize it.
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit            = BNO055IMU.AngleUnit.DEGREES;
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-//        pipeline = new SleeveDetectionPipeline();
         // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
         // out when the RC activity is in portrait. We do our actual image processing assuming
         // landscape orientation, though.
@@ -85,6 +82,8 @@ public abstract class OrcaAutoBsse extends OrcaRobot {
                  */
             }
         });
+        pipeline = new OrcaAutoBase.SleeveDetectionPipeline();
+        webcam.setPipeline(pipeline);
     }
 
     /**
@@ -338,7 +337,7 @@ public abstract class OrcaAutoBsse extends OrcaRobot {
         Boolean pictureTaken = Boolean.FALSE;
 
         // Volatile since accessed by OpMode thread w/o synchronization
-        private volatile OrcaAutoBsse.SleeveDetectionPipeline.SkystonePosition position = OrcaAutoBsse.SleeveDetectionPipeline.SkystonePosition.LEFT;
+        private volatile OrcaAutoBase.SleeveDetectionPipeline.SkystonePosition position = OrcaAutoBase.SleeveDetectionPipeline.SkystonePosition.LEFT;
         private int captureCounter = 0;
         private File captureDirectory = AppUtil.ROBOT_DATA_DIR;
         private void saveBitmap(Bitmap bitmap) {
@@ -473,11 +472,11 @@ public abstract class OrcaAutoBsse extends OrcaRobot {
                     System.out.println(String.join(",", Integer.toString(avgr), Integer.toString(avgg), Integer.toString(avgb)));
                     int delta = avgr-avgg;
                     if(avgb > avgg && avgb > avgr){
-                        position = OrcaAutoBsse.SleeveDetectionPipeline.SkystonePosition.LEFT;
+                        position = OrcaAutoBase.SleeveDetectionPipeline.SkystonePosition.LEFT;
                     }else if(avgr > avgg && avgr > avgb){
-                        position = OrcaAutoBsse.SleeveDetectionPipeline.SkystonePosition.RIGHT;
+                        position = OrcaAutoBase.SleeveDetectionPipeline.SkystonePosition.RIGHT;
                     }else if(avgg > avgr && avgg > avgb){
-                        position = OrcaAutoBsse.SleeveDetectionPipeline.SkystonePosition.CENTER;
+                        position = OrcaAutoBase.SleeveDetectionPipeline.SkystonePosition.CENTER;
                     }
                 }
             }
@@ -488,7 +487,7 @@ public abstract class OrcaAutoBsse extends OrcaRobot {
         /*
          * Call this from the OpMode thread to obtain the latest analysis
          */
-        public OrcaAutoBsse.SleeveDetectionPipeline.SkystonePosition getAnalysis()
+        public OrcaAutoBase.SleeveDetectionPipeline.SkystonePosition getAnalysis()
         {
             return position;
         }

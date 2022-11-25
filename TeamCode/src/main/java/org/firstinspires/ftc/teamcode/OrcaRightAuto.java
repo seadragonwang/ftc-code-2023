@@ -3,8 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@Autonomous(name="HailongAuto")
-public class OrcaRightAuto extends OrcaAutoBsse {
+@Autonomous(name="OrcaRightAuto")
+public class OrcaRightAuto extends OrcaAutoBase {
 
 
     protected void raiseSlider1(int targetPos){
