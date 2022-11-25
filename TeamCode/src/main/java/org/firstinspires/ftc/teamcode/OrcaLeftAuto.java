@@ -29,58 +29,96 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Locale;
 
-@Autonomous(name="HailongAuto")
-public class OrcaAuto extends OrcaRobot{
+@Autonomous(name="LeftAuto")
+public class OrcaLeftAuto extends OrcaAutoBsse{
     private final File captureDirectory = AppUtil.ROBOT_DATA_DIR;
-    private SleeverDetection.SleeveDetectionPipeline pipeline;
+    private OrcaAutoBsse.SleeveDetectionPipeline pipeline;
     private OpenCvCamera webcam;
 //    protected GyroSensor gyro;
 
-    @Override
-    protected void setup(){
-        super.setup();
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
 
-        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
-        // out when the RC activity is in portrait. We do our actual image processing assuming
-        // landscape orientation, though.
-        webcam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
-
-        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
-            @Override
-            public void onOpened() {
-                webcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
-            }
-
-            @Override
-            public void onError(int errorCode) {
-                /*
-                 * This will be called if the camera could not be opened
-                 */
-            }
-        });
+    protected void raiseSlider3(int targetPos){
+        raise.setTargetPosition(targetPos);
+        raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        raise.setPower(1.0);
+        while (raise.isBusy()) {
+            sleep(100);
+        }
     }
+
+//    @Override
+//    protected void setup(){
+//        super.setup();
+//        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+//        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+//
+//        // We set the viewport policy to optimized view so the preview doesn't appear 90 deg
+//        // out when the RC activity is in portrait. We do our actual image processing assuming
+//        // landscape orientation, though.
+//        webcam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
+//
+//        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+//            @Override
+//            public void onOpened() {
+//                webcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+//            }
+//
+//            @Override
+//            public void onError(int errorCode) {
+//                /*
+//                 * This will be called if the camera could not be opened
+//                 */
+//            }
+//        });
+//    }
 
     protected void raiseSlider2(int targetPos){
         raise.setTargetPosition(targetPos);
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
         while (raise.isBusy()) {
-            driveDistance(-300, 0.5);
-            turn(180, 0.5);
-            slide(500, 0.5);
+            driveDistance(-300, 0.5, 0);
+
+            driveDistance(1640, 0.1,0);
+            openClaw();
 
         }
     }
-
-    protected void raiseSlider1(int targetPos){
+    protected void prepareToPark(int targetPos, OrcaAutoBsse.SleeveDetectionPipeline.SkystonePosition position){
         raise.setTargetPosition(targetPos);
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
         while (raise.isBusy()) {
-            slide(-170, 0.5);
-            driveDistance(1680, 0.5);
+//            driveDistance(-300, 0.5);
+
+
+            sleep(100);
+
+        }
+        driveDistance(1000, 0.6,180);
+        if (position == OrcaAutoBsse.SleeveDetectionPipeline.SkystonePosition.LEFT) {
+            slide(-550, 0.6, 90);
+        } else if (position == OrcaAutoBsse.SleeveDetectionPipeline.SkystonePosition.RIGHT) {
+            slide(500, 0.6, -90);
+        }
+        openClaw();
+    }
+
+    protected void raiseSlider1(int targetPos, OrcaAutoBsse.SleeveDetectionPipeline.SkystonePosition position){
+        raise.setTargetPosition(targetPos);
+        raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        raise.setPower(1.0);
+        while (raise.isBusy()) {
+            slide(-100, 0.6,0);
+            driveDistance(50, 0.6, 0);
+            turn(180, 0.5);
+//            driveDistance(100, -0.5, 0);
+
+            driveDistance(-1590, 0.6,-180);
+
+            openClaw();
+            prepareToPark(0, position);
+
         }
     }
 
@@ -91,13 +129,12 @@ public class OrcaAuto extends OrcaRobot{
         setup();
         closeClaw();
         raise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         waitForStart();
         if (opModeIsActive()) {
-            raiseSlider1(ARM_COUNTS_FOR_HIGH_JUNCTION);
+            raiseSlider1(ARM_COUNTS_FOR_HIGH_JUNCTION, pipeline.getAnalysis());
             openClaw();
-            slide(-50, 0.5);
-            raiseSlider2(ARM_COUNTS_FOR_FIVE_CONES);
+//            slide(-50, 0.5);
+
         }
 
 //        if (pipeline.getAnalysis() == SleeverDetection.SleeveDetectionPipeline.SkystonePosition.CENTER) {
@@ -139,9 +176,9 @@ public class OrcaAuto extends OrcaRobot{
         /*
          * The core values which define the location and size of the sample regions
          */
-        static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(226,271);
-        static final int REGION_WIDTH = 46;
-        static final int REGION_HEIGHT = 112;
+        static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(298,242);
+        static final int REGION_WIDTH = 66;
+        static final int REGION_HEIGHT = 147;
 
         /*
          * Points which actually define the sample region rectangles, derived from above values
@@ -221,13 +258,13 @@ public class OrcaAuto extends OrcaRobot{
 //            inputToCb(firstFrame);
 
 
-            final String TAG = "bitmap";
-            Mat img = new Mat();
-            String photoPath = "/storage/self/primary/FIRST/data/webcam-frame-9.jpg";
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            options.inSampleSize = 8;
-            final Bitmap bmp = BitmapFactory.decodeFile(photoPath);
-            Utils.bitmapToMat(bmp, img);
+//            final String TAG = "bitmap";
+//            Mat img = new Mat();
+//            String photoPath = "/storage/self/primary/FIRST/data/webcam-frame-9.jpg";
+////            BitmapFactory.Options options = new BitmapFactory.Options();
+////            options.inSampleSize = 8;
+//            final Bitmap bmp = BitmapFactory.decodeFile(photoPath);
+//            Utils.bitmapToMat(bmp, img);
             /*
              * Submats are a persistent reference to a region of the parent
              * buffer. Any changes to the child affect the parent, and the
