@@ -75,8 +75,8 @@ public class OrcaLeftAuto extends OrcaAutoBase {
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
         while (raise.isBusy()) {
-            slide(-100, 0.6,0);
-            driveDistance(50, 0.6, 0);
+            slide(-130, 0.6,0);
+            driveDistance(50, 0.8, 0);
             turn(180, 0.5);
 //            driveDistance(100, -0.5, 0);
 
