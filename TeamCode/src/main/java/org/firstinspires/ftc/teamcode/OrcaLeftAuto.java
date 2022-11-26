@@ -61,9 +61,9 @@ public class OrcaLeftAuto extends OrcaAutoBase {
             sleep(100);
 
         }
-        driveDistance(1000, 0.6,180);
+        driveDistance(1040, 0.6,180);
         if (position == SleevePosition.LEFT) {
-            slide(-550, 0.6, 90);
+            slide(-750, 0.6, 90);
         } else if (position == SleevePosition.RIGHT) {
             slide(500, 0.6, -90);
         }
