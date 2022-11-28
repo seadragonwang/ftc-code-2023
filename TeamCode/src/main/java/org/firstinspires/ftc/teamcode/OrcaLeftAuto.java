@@ -51,6 +51,14 @@ public class OrcaLeftAuto extends OrcaAutoBase {
         }
     }
     protected void prepareToPark(int targetPos, SleevePosition position){
+
+        driveDistance(950, 0.6,180);
+        if (position == SleevePosition.LEFT) {
+            slide(-750, 0.6, 90);
+        } else if (position == SleevePosition.RIGHT) {
+            slide(700, 0.6, -90);
+        }
+        openClaw();
         raise.setTargetPosition(targetPos);
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
@@ -61,13 +69,6 @@ public class OrcaLeftAuto extends OrcaAutoBase {
             sleep(100);
 
         }
-        driveDistance(1040, 0.6,180);
-        if (position == SleevePosition.LEFT) {
-            slide(-750, 0.6, 90);
-        } else if (position == SleevePosition.RIGHT) {
-            slide(500, 0.6, -90);
-        }
-        openClaw();
     }
 
     protected void raiseSlider1(int targetPos, SleevePosition position){

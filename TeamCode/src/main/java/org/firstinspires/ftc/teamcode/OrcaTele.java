@@ -54,9 +54,9 @@ public class OrcaTele extends OrcaRobot {
         double rx = gamepad1.right_stick_x;
 
         if(gamepad1.x){
-            slideByPower(DRIVE_SPEED);
+            slideByPower(0.75);
         }else if(gamepad1.b){
-            slideByPower(-DRIVE_SPEED);
+            slideByPower(-0.75);
         }else if(gamepad1.y){
             driveByPower(DRIVE_SPEED);
         }else if(gamepad1.a){

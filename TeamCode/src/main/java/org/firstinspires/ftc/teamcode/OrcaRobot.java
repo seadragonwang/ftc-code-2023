@@ -51,8 +51,8 @@ public abstract class OrcaRobot extends LinearOpMode {
     protected Servo claw2;
 
     protected void openClaw(){
-        claw.setPosition(1);
-        claw2.setPosition(0);
+        claw.setPosition(0.9);
+        claw2.setPosition(0.1);
     }
 
     protected void closeClaw(){
