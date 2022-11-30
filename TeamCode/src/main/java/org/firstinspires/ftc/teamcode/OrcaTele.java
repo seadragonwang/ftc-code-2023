@@ -41,7 +41,7 @@ public class OrcaTele extends OrcaRobot {
         double y = gamepad1.left_stick_y; // Counteract imperfect strafing
         if (gamepad2.x) {
             openClaw();
-            sleep(100);
+            sleep(300);
             raiseSlider(0);
         } else if (gamepad2.left_bumper) {
             closeClaw();
@@ -54,9 +54,9 @@ public class OrcaTele extends OrcaRobot {
         double rx = gamepad1.right_stick_x;
 
         if(gamepad1.x){
-            slideByPower(DRIVE_SPEED);
+            slideByPower(0.75);
         }else if(gamepad1.b){
-            slideByPower(-DRIVE_SPEED);
+            slideByPower(-0.75);
         }else if(gamepad1.y){
             driveByPower(DRIVE_SPEED);
         }else if(gamepad1.a){

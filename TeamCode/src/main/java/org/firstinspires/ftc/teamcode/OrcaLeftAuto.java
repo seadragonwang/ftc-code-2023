@@ -50,24 +50,79 @@ public class OrcaLeftAuto extends OrcaAutoBase {
 
         }
     }
+    public int roundAngle(int angle) {
+        if (angle > 180) {
+            return angle-360;
+        } else if (angle < -180) {
+            return angle+360;
+        } else {
+            return angle;
+        }
+    }
+
     protected void prepareToPark(int targetPos, SleevePosition position){
-        raise.setTargetPosition(targetPos);
-        raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        raise.setPower(1.0);
-        while (raise.isBusy()) {
+//        driveDistance(300, 0.5, -180);
+
+
+        if (position == SleevePosition.LEFT) {
+            driveDistance(330, 0.6,180);
+
+            raise.setTargetPosition(targetPos);
+            raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            raise.setPower(1.0);
+            raise.setTargetPosition(0);
+            while (raise.isBusy()) {
 //            driveDistance(-300, 0.5);
 
 
-            sleep(100);
+                sleep(100);
 
-        }
-        driveDistance(1040, 0.6,180);
-        if (position == SleevePosition.LEFT) {
-            slide(-750, 0.6, 90);
+            }
+            turn(roundAngle((int)(90-getRawHeading())), 0.5);
+            driveDistance(620, 0.5, -90);
+            turn(roundAngle((int)(-180-getRawHeading())), 0.5);
+            driveDistance(-100, 0.5, -90);
+            sendTelemetry();
         } else if (position == SleevePosition.RIGHT) {
-            slide(500, 0.6, -90);
+            driveDistance(330, 0.6,180);
+
+            raise.setTargetPosition(targetPos);
+            raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            raise.setPower(1.0);
+            raise.setTargetPosition(0);
+            while (raise.isBusy()) {
+//            driveDistance(-300, 0.5);
+
+
+                sleep(100);
+
+            }
+            turn(roundAngle((int)(-90-getRawHeading())), 0.5);
+            driveDistance(540, 0.5, -90);
+            turn(roundAngle((int)(-180-getRawHeading())), 0.5);
+            driveDistance(-100, 0.5, 90);
+            sendTelemetry();
+        } else {
+            driveDistance(230, 0.6,180);
+            slide(-50, 0.5, -180);
+
+            raise.setTargetPosition(targetPos);
+            raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            raise.setPower(1.0);
+            raise.setTargetPosition(0);
+            while (raise.isBusy()) {
+//            driveDistance(-300, 0.5);
+
+
+                sleep(100);
+
+            }
+            turn((int) (180-getRawHeading()), 0.5);
+            sendTelemetry();
         }
         openClaw();
+        sleep(5000);
+
     }
 
     protected void raiseSlider1(int targetPos, SleevePosition position){
@@ -75,14 +130,17 @@ public class OrcaLeftAuto extends OrcaAutoBase {
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
         while (raise.isBusy()) {
-            slide(-130, 0.6,0);
-            driveDistance(50, 0.8, 0);
-            turn(180, 0.5);
+            driveDistance(150, 0.6, 0);
+
+            slide(-135, 0.5,0);
+
+            turn(roundAngle((int) (180-getRawHeading())), 0.5);
 //            driveDistance(100, -0.5, 0);
 
-            driveDistance(-1590, 0.6,-180);
+            driveDistance(-890, 0.6,-180);
 
             openClaw();
+
             prepareToPark(0, position);
 
         }
@@ -93,11 +151,17 @@ public class OrcaLeftAuto extends OrcaAutoBase {
     {
 
         setup();
-        closeClaw();
+        openClaw();
         raise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        turn(90, 0.5);
+//        sleep(1500);
+//        sendTelemetry();
+//        sleep(20000);
         waitForStart();
+        closeClaw();
+        sleep(500);
         if (opModeIsActive()) {
-            raiseSlider1(ARM_COUNTS_FOR_HIGH_JUNCTION, pipeline.getAnalysis());
+            raiseSlider1(ARM_COUNTS_FOR_MEDIUM_JUNCTION, pipeline.getAnalysis());
             openClaw();
 //            slide(-50, 0.5);
 
