@@ -38,7 +38,7 @@ public abstract class OrcaAutoBase extends OrcaRobot {
     static final double     P_TURN_GAIN            = 0.02;     // Larger is more responsive, but also less stable
     static final double     P_DRIVE_GAIN           = 0.05;     // Larger is more responsive, but also less stable
     static final double     DRIVE_SPEED             = 0.6;     // Max driving speed for better distance accuracy.
-    static final double     TURN_SPEED              = 0.6;     // Max Turn speed to limit turn rate
+    static final double     TURN_SPEED              = 0.5;     // Max Turn speed to limit turn rate
     static final double     HEADING_THRESHOLD       = 2.0 ;    // How close must the heading get to the target before moving to next step.
     protected final File captureDirectory = AppUtil.ROBOT_DATA_DIR;
     protected SleeveDetectionPipeline pipeline   = null;
@@ -173,6 +173,7 @@ public abstract class OrcaAutoBase extends OrcaRobot {
         motorBackLeft.setPower(speed);
 
         while (opModeIsActive() && isStillDriving()) {
+//            sleep(50);
             turnSpeed = getSteeringCorrection(heading, P_DRIVE_GAIN);
 
             // if driving in reverse, the motor correction also needs to be reversed
@@ -213,16 +214,17 @@ public abstract class OrcaAutoBase extends OrcaRobot {
         motorBackLeft.setPower(speed);
 
         while (opModeIsActive() && isStillDriving()) {
-            // Determine required steering to keep on heading
-            turnSpeed = getSteeringCorrection(heading, P_DRIVE_GAIN);
-
-            // if driving in reverse, the motor correction also needs to be reversed
-            if (distanceInMilliMeter < 0)
-                turnSpeed *= -1.0;
-
-            // Apply the turning correction to the current driving speed.
-            moveRobot(speed, turnSpeed);
-            sendTelemetry();
+            sleep(50);
+//            // Determine required steering to keep on heading
+//            turnSpeed = getSteeringCorrection(heading, P_DRIVE_GAIN);
+//
+//            // if driving in reverse, the motor correction also needs to be reversed
+//            if (distanceInMilliMeter < 0)
+//                turnSpeed *= -1.0;
+//
+//            // Apply the turning correction to the current driving speed.
+//            moveRobot(speed, turnSpeed);
+//            sendTelemetry();
         }
     }
 
@@ -231,7 +233,7 @@ public abstract class OrcaAutoBase extends OrcaRobot {
      */
     protected void turn(int degree, double speed) {
         if(degree == 0) return;
-        int distanceInCounts = (int) (degree * CHASSIS_DIAMETER_IN_MILLIMETER*Math.PI*WHEEL_COUNTS_PER_MILLIMETER * 2.518/360);
+        int distanceInCounts = (int) (degree * CHASSIS_DIAMETER_IN_MILLIMETER*Math.PI*WHEEL_COUNTS_PER_MILLIMETER * 2.522/360);
         setDrivingMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         int frCurrentPosition = motorFrontRight.getCurrentPosition();
         int flCurrentPosition = motorFrontLeft.getCurrentPosition();
