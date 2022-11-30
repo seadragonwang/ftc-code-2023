@@ -180,8 +180,9 @@ public abstract class OrcaAutoBase extends OrcaRobot {
                 turnSpeed *= -1.0;
 
             // Apply the turning correction to the current driving speed.
-            moveRobot(speed, turnSpeed);
+//            moveRobot(speed, turnSpeed);
             sendTelemetry();
+//            sleep(50);
         }
     }
 
@@ -214,15 +215,16 @@ public abstract class OrcaAutoBase extends OrcaRobot {
 
         while (opModeIsActive() && isStillDriving()) {
             // Determine required steering to keep on heading
-            turnSpeed = getSteeringCorrection(heading, P_DRIVE_GAIN);
-
-            // if driving in reverse, the motor correction also needs to be reversed
-            if (distanceInMilliMeter < 0)
-                turnSpeed *= -1.0;
-
-            // Apply the turning correction to the current driving speed.
-            moveRobot(speed, turnSpeed);
-            sendTelemetry();
+//            turnSpeed = getSteeringCorrection(heading, P_DRIVE_GAIN);
+//
+//            // if driving in reverse, the motor correction also needs to be reversed
+//            if (distanceInMilliMeter < 0)
+//                turnSpeed *= -1.0;
+//
+//            // Apply the turning correction to the current driving speed.
+//            moveRobot(speed, turnSpeed);
+//            sendTelemetry();
+            sleep(50);
         }
     }
 
@@ -270,7 +272,7 @@ public abstract class OrcaAutoBase extends OrcaRobot {
      *
      */
     protected void sendTelemetry() {
-        telemetry.addData("Angle Target:Current", "%5.2f:%5.0f", targetHeading, robotHeading);
+        telemetry.addData("Angle Target:Current", "%5.2f:%5.0f", getRawHeading(), robotHeading);
         telemetry.addData("Error:Steer",  "%5.1f:%5.1f", headingError, turnSpeed);
         telemetry.addData("Wheel Speeds L:R.", "%5.2f : %5.2f", leftSpeed, rightSpeed);
         telemetry.update();

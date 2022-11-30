@@ -35,7 +35,7 @@ public abstract class OrcaRobot extends LinearOpMode {
     public static final int ARM_COUNTS_PER_MILLIMETER = (int) ((COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO) / (PULLEY_DIAMETER_IN_MM * Math.PI));
     public static final double ARM_FULL_SPEED_IN_COUNTS = COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO * ARM_MOTOR_SPEED_IN_RPM / 60;
     public static final int ARM_COUNTS_FOR_HIGH_JUNCTION = -(int) ((HIGH_JUNCTION_IN_MILLIMETER+125) * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_MEDIUM_JUNCTION = -(int) ((MEDIUM_JUNCTION_IN_MILLIMETER+50) * ARM_COUNTS_PER_MILLIMETER);
+    public static final int ARM_COUNTS_FOR_MEDIUM_JUNCTION = -(int) ((MEDIUM_JUNCTION_IN_MILLIMETER+180) * ARM_COUNTS_PER_MILLIMETER);
     public static final int ARM_COUNTS_FOR_LOW_JUNCTION = -(int) ((LOW_JUNCTION_IN_MILLIMETER+50) * ARM_COUNTS_PER_MILLIMETER);
     public static final int ARM_COUNTS_FOR_FIVE_CONES = -(int) (135 * ARM_COUNTS_PER_MILLIMETER);
     public static final int ARM_COUNTS_FOR_FOUR_CONES = -(int) ((110) * ARM_COUNTS_PER_MILLIMETER);
@@ -51,13 +51,13 @@ public abstract class OrcaRobot extends LinearOpMode {
     protected Servo claw2;
 
     protected void openClaw(){
-        claw.setPosition(0.9);
-        claw2.setPosition(0.1);
+        claw.setPosition(1);
+        claw2.setPosition(0);
     }
 
     protected void closeClaw(){
         claw.setPosition(0.65);
-        claw2.setPosition(0.35);
+        claw2.setPosition(0.33);
     }
 
     /**
