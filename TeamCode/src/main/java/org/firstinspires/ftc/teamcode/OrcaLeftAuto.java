@@ -84,7 +84,7 @@ public class OrcaLeftAuto extends OrcaAutoBase {
             driveDistance(-100, 0.5, -90);
             sendTelemetry();
         } else if (position == SleevePosition.RIGHT) {
-            driveDistance(330, 0.6,180);
+            driveDistance(360, 0.6,180);
 
             raise.setTargetPosition(targetPos);
             raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -98,7 +98,7 @@ public class OrcaLeftAuto extends OrcaAutoBase {
 
             }
             turn(roundAngle((int)(-90-getRawHeading())), 0.5);
-            driveDistance(540, 0.5, -90);
+            driveDistance(520, 0.5, -90);
             turn(roundAngle((int)(-180-getRawHeading())), 0.5);
             driveDistance(-100, 0.5, 90);
             sendTelemetry();
@@ -117,7 +117,7 @@ public class OrcaLeftAuto extends OrcaAutoBase {
                 sleep(100);
 
             }
-            turn((int) (180-getRawHeading()), 0.5);
+            turn(roundAngle((int) (180-getRawHeading())), 0.5);
             sendTelemetry();
         }
         openClaw();
