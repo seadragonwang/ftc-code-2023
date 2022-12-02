@@ -84,13 +84,13 @@ public class OrcaRightAuto extends OrcaAutoBase {
 //            raiseSlider4(0);
 //            turn(35, TURN_SPEED);
             turn(roundAngle(90-getRawHeading()), 0.4);
+
             if(position == SleevePosition.LEFT){
                 driveDistance(650, DRIVE_SPEED, 90);
             }else if(position == SleevePosition.RIGHT){
                 driveDistance(-600, DRIVE_SPEED, 90);
             }
             raiseSlider3(0);
-
 //            sleep(200);
 //            raiseSlider3(0);
         }
