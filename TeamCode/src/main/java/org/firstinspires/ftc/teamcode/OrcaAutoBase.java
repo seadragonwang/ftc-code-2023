@@ -38,7 +38,7 @@ public abstract class OrcaAutoBase extends OrcaRobot {
     static final double     P_TURN_GAIN            = 0.02;     // Larger is more responsive, but also less stable
     static final double     P_DRIVE_GAIN           = 0.05;     // Larger is more responsive, but also less stable
     static final double     DRIVE_SPEED             = 0.6;     // Max driving speed for better distance accuracy.
-    static final double     TURN_SPEED              = 0.6;     // Max Turn speed to limit turn rate
+    static final double     TURN_SPEED              = 0.5;     // Max Turn speed to limit turn rate
     static final double     HEADING_THRESHOLD       = 2.0 ;    // How close must the heading get to the target before moving to next step.
     protected final File captureDirectory = AppUtil.ROBOT_DATA_DIR;
     protected SleeveDetectionPipeline pipeline   = null;
@@ -173,6 +173,7 @@ public abstract class OrcaAutoBase extends OrcaRobot {
         motorBackLeft.setPower(speed);
 
         while (opModeIsActive() && isStillDriving()) {
+//            sleep(50);
             turnSpeed = getSteeringCorrection(heading, P_DRIVE_GAIN);
 
             // if driving in reverse, the motor correction also needs to be reversed
@@ -180,9 +181,18 @@ public abstract class OrcaAutoBase extends OrcaRobot {
                 turnSpeed *= -1.0;
 
             // Apply the turning correction to the current driving speed.
-//            moveRobot(speed, turnSpeed);
+            moveRobot(speed, turnSpeed);
             sendTelemetry();
-//            sleep(50);
+        }
+    }
+
+    public int roundAngle(double angle) {
+        if (angle > 180) {
+            return (int)(angle-360);
+        } else if (angle < -180) {
+            return (int)(angle+360);
+        } else {
+            return (int)angle;
         }
     }
 

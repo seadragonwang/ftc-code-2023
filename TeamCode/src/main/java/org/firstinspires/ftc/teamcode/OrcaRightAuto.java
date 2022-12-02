@@ -12,8 +12,7 @@ public class OrcaRightAuto extends OrcaAutoBase {
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
         while (raise.isBusy()) {
-            slide(-160, DRIVE_SPEED, 0);
-            driveDistance(1635, DRIVE_SPEED, 0);
+            sleep(50);
         }
     }
 
@@ -22,9 +21,9 @@ public class OrcaRightAuto extends OrcaAutoBase {
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
         while (raise.isBusy()) {
-            driveDistance(-300, DRIVE_SPEED, 0);
+            driveDistance(-320, DRIVE_SPEED, 0);
             turn(180, TURN_SPEED);
-            slide(480, DRIVE_SPEED, 180);
+            slide(520, DRIVE_SPEED, 180);
         }
     }
 
@@ -37,26 +36,63 @@ public class OrcaRightAuto extends OrcaAutoBase {
         }
     }
 
+
+    protected void raiseSlider4(int targetPos){
+        raise.setTargetPosition(targetPos);
+        raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        raise.setPower(1.0);
+        while (raise.isBusy()) {
+            sleep(50);
+        }
+    }
+
+
     @Override
     public void runOpMode() {
         setup();
-        closeClaw();
+        openClaw();
+        robotHeading = getRawHeading();
         raise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         waitForStart();
+        closeClaw();
+        sleep(500);
+        waitForStart();
+        SleevePosition position = pipeline.getAnalysis();
         if (opModeIsActive()) {
-            raiseSlider1(ARM_COUNTS_FOR_HIGH_JUNCTION);
+            raiseSlider1(ARM_COUNTS_FOR_MEDIUM_JUNCTION);
+            slide(-130, DRIVE_SPEED, 0);
 
+            driveDistance(980, 0.7, 0);
+            turn(roundAngle(-getRawHeading()), 0.4);
             openClaw();
-            raiseSlider2(ARM_COUNTS_FOR_FIVE_CONES);
-            closeClaw();
-            sleep(400);
-            raiseSlider3(ARM_COUNTS_FOR_LOW_JUNCTION);
-            turn(-90, TURN_SPEED);
-            driveDistance(320, DRIVE_SPEED, -90);
-            openClaw();
-            sleep(200);
+            slide(-50, 0.5, 0);
+            driveDistance(-250, DRIVE_SPEED, 0);
+
+//            raiseSlider2(ARM_COUNTS_FOR_FIVE_CONES);
+//            closeClaw();
+//            sleep(400);
+//            raiseSlider3(ARM_COUNTS_FOR_LOW_JUNCTION);
+//            turn(-125, TURN_SPEED);
+//            driveDistance(320, DRIVE_SPEED, -90);
+//            openClaw();
+//            raiseSlider4(ARM_COUNTS_FOR_FOUR_CONES);
+//            closeClaw();
+//            sleep(300);
+//            raiseSlider3(ARM_COUNTS_FOR_LOW_JUNCTION);
+//            turn(-125, TURN_SPEED);
+//            openClaw();
+//            raiseSlider4(0);
+//            turn(35, TURN_SPEED);
+            turn(roundAngle(90-getRawHeading()), 0.4);
+            if(position == SleevePosition.LEFT){
+                driveDistance(650, DRIVE_SPEED, 90);
+            }else if(position == SleevePosition.RIGHT){
+                driveDistance(-600, DRIVE_SPEED, 90);
+            }
             raiseSlider3(0);
+
+//            sleep(200);
+//            raiseSlider3(0);
         }
 
 //        if (pipeline.getAnalysis() == SleeverDetection.SleeveDetectionPipeline.SkystonePosition.CENTER) {
