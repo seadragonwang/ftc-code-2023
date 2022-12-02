@@ -50,43 +50,47 @@ public class OrcaRightAuto extends OrcaAutoBase {
     @Override
     public void runOpMode() {
         setup();
-        closeClaw();
+        openClaw();
         robotHeading = getRawHeading();
         raise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
+        waitForStart();
+        closeClaw();
+        sleep(500);
         waitForStart();
         SleevePosition position = pipeline.getAnalysis();
         if (opModeIsActive()) {
-            raiseSlider1(ARM_COUNTS_FOR_HIGH_JUNCTION);
+            raiseSlider1(ARM_COUNTS_FOR_MEDIUM_JUNCTION);
             slide(-130, DRIVE_SPEED, 0);
 
-            driveDistance(1635, 0.7, 0);
-            turn((int)-getRawHeading(), 0.4);
+            driveDistance(980, 0.7, 0);
+            turn(roundAngle(-getRawHeading()), 0.4);
             openClaw();
+            slide(-50, 0.5, 0);
+            driveDistance(-250, DRIVE_SPEED, 0);
 
-            raiseSlider2(ARM_COUNTS_FOR_FIVE_CONES);
-            closeClaw();
-            sleep(400);
-            raiseSlider3(ARM_COUNTS_FOR_LOW_JUNCTION);
-            turn(-125, TURN_SPEED);
+//            raiseSlider2(ARM_COUNTS_FOR_FIVE_CONES);
+//            closeClaw();
+//            sleep(400);
+//            raiseSlider3(ARM_COUNTS_FOR_LOW_JUNCTION);
+//            turn(-125, TURN_SPEED);
 //            driveDistance(320, DRIVE_SPEED, -90);
-            openClaw();
+//            openClaw();
 //            raiseSlider4(ARM_COUNTS_FOR_FOUR_CONES);
 //            closeClaw();
 //            sleep(300);
 //            raiseSlider3(ARM_COUNTS_FOR_LOW_JUNCTION);
 //            turn(-125, TURN_SPEED);
 //            openClaw();
-            raiseSlider4(0);
+//            raiseSlider4(0);
 //            turn(35, TURN_SPEED);
-            turn(90-(int)(getRawHeading()), 0.4);
+            turn(roundAngle(90-getRawHeading()), 0.4);
             if(position == SleevePosition.LEFT){
-                driveDistance(1100, DRIVE_SPEED, 90);
-            }else if(position == SleevePosition.CENTER){
-                driveDistance(580, DRIVE_SPEED, 90);
-            }else{
-                driveDistance(-50, DRIVE_SPEED, 90);
+                driveDistance(650, DRIVE_SPEED, 90);
+            }else if(position == SleevePosition.RIGHT){
+                driveDistance(-600, DRIVE_SPEED, 90);
             }
+            raiseSlider3(0);
+
 //            sleep(200);
 //            raiseSlider3(0);
         }

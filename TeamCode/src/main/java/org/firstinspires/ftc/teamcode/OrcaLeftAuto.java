@@ -50,22 +50,13 @@ public class OrcaLeftAuto extends OrcaAutoBase {
 
         }
     }
-    public int roundAngle(int angle) {
-        if (angle > 180) {
-            return angle-360;
-        } else if (angle < -180) {
-            return angle+360;
-        } else {
-            return angle;
-        }
-    }
 
     protected void prepareToPark(int targetPos, SleevePosition position){
 //        driveDistance(300, 0.5, -180);
 
 
         if (position == SleevePosition.LEFT) {
-            driveDistance(330, 0.6,180);
+            driveDistance(340, 0.6,180);
 
             raise.setTargetPosition(targetPos);
             raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -78,13 +69,13 @@ public class OrcaLeftAuto extends OrcaAutoBase {
                 sleep(100);
 
             }
-            turn(roundAngle((int)(90-getRawHeading())), 0.5);
-            driveDistance(620, 0.5, -90);
-            turn(roundAngle((int)(-180-getRawHeading())), 0.5);
+            turn(roundAngle(90-getRawHeading()), 0.5);
+            driveDistance(620, 0.5, 90);
+            turn(roundAngle(-180-getRawHeading()), 0.5);
             driveDistance(-100, 0.5, -90);
             sendTelemetry();
         } else if (position == SleevePosition.RIGHT) {
-            driveDistance(330, 0.6,180);
+            driveDistance(320, 0.6,180);
 
             raise.setTargetPosition(targetPos);
             raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
@@ -97,9 +88,9 @@ public class OrcaLeftAuto extends OrcaAutoBase {
                 sleep(100);
 
             }
-            turn(roundAngle((int)(-90-getRawHeading())), 0.5);
+            turn(roundAngle(-90-getRawHeading()), 0.5);
             driveDistance(540, 0.5, -90);
-            turn(roundAngle((int)(-180-getRawHeading())), 0.5);
+            turn(roundAngle(-180-getRawHeading()), 0.5);
             driveDistance(-100, 0.5, 90);
             sendTelemetry();
         } else {
@@ -117,12 +108,10 @@ public class OrcaLeftAuto extends OrcaAutoBase {
                 sleep(100);
 
             }
-            turn((int) (180-getRawHeading()), 0.5);
+            turn(roundAngle(180-getRawHeading()), 0.5);
             sendTelemetry();
         }
         openClaw();
-        sleep(5000);
-
     }
 
     protected void raiseSlider1(int targetPos, SleevePosition position){
@@ -132,9 +121,9 @@ public class OrcaLeftAuto extends OrcaAutoBase {
         while (raise.isBusy()) {
             driveDistance(150, 0.6, 0);
 
-            slide(-135, 0.5,0);
+            slide(-145, 0.5,0);
 
-            turn(roundAngle((int) (180-getRawHeading())), 0.5);
+            turn(roundAngle(180-getRawHeading()), 0.4);
 //            driveDistance(100, -0.5, 0);
 
             driveDistance(-890, 0.6,-180);

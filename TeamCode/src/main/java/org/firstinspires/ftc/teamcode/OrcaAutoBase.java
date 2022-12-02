@@ -186,6 +186,16 @@ public abstract class OrcaAutoBase extends OrcaRobot {
         }
     }
 
+    public int roundAngle(double angle) {
+        if (angle > 180) {
+            return (int)(angle-360);
+        } else if (angle < -180) {
+            return (int)(angle+360);
+        } else {
+            return (int)angle;
+        }
+    }
+
     /**
      * Positive distanceInMilliMeter will slide to left.
      * @param distanceInMilliMeter
@@ -214,8 +224,7 @@ public abstract class OrcaAutoBase extends OrcaRobot {
         motorBackLeft.setPower(speed);
 
         while (opModeIsActive() && isStillDriving()) {
-            sleep(50);
-//            // Determine required steering to keep on heading
+            // Determine required steering to keep on heading
 //            turnSpeed = getSteeringCorrection(heading, P_DRIVE_GAIN);
 //
 //            // if driving in reverse, the motor correction also needs to be reversed
@@ -225,6 +234,7 @@ public abstract class OrcaAutoBase extends OrcaRobot {
 //            // Apply the turning correction to the current driving speed.
 //            moveRobot(speed, turnSpeed);
 //            sendTelemetry();
+            sleep(50);
         }
     }
 
@@ -233,7 +243,7 @@ public abstract class OrcaAutoBase extends OrcaRobot {
      */
     protected void turn(int degree, double speed) {
         if(degree == 0) return;
-        int distanceInCounts = (int) (degree * CHASSIS_DIAMETER_IN_MILLIMETER*Math.PI*WHEEL_COUNTS_PER_MILLIMETER * 2.522/360);
+        int distanceInCounts = (int) (degree * CHASSIS_DIAMETER_IN_MILLIMETER*Math.PI*WHEEL_COUNTS_PER_MILLIMETER * 2.518/360);
         setDrivingMotorMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         int frCurrentPosition = motorFrontRight.getCurrentPosition();
         int flCurrentPosition = motorFrontLeft.getCurrentPosition();
@@ -272,7 +282,7 @@ public abstract class OrcaAutoBase extends OrcaRobot {
      *
      */
     protected void sendTelemetry() {
-        telemetry.addData("Angle Target:Current", "%5.2f:%5.0f", targetHeading, robotHeading);
+        telemetry.addData("Angle Target:Current", "%5.2f:%5.0f", getRawHeading(), robotHeading);
         telemetry.addData("Error:Steer",  "%5.1f:%5.1f", headingError, turnSpeed);
         telemetry.addData("Wheel Speeds L:R.", "%5.2f : %5.2f", leftSpeed, rightSpeed);
         telemetry.update();
