@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Math.abs;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name="OrcaTele",group="")
 public class OrcaTele extends OrcaRobot {
-    static final double     DRIVE_SPEED             = 0.6;     // Max driving speed for better distance accuracy.
+    static final double     DRIVE_SPEED             = 0.7;     // Max driving speed for better distance accuracy.
+    static final double SLIDE_SPEED = 0.85;
 
     /**
      * Power is positive, robot will slide left, otherwise slide right
@@ -23,6 +26,12 @@ public class OrcaTele extends OrcaRobot {
      * @param power
      */
     protected void driveByPower(double power){
+//        double newPower;
+//        if(abs(power) < 0.01) {
+//            newPower = 0;
+//        } else {
+//            newPower = power;
+//        }
         motorFrontLeft.setPower(-power);
         motorBackLeft.setPower(-power);
         motorFrontRight.setPower(power);
@@ -45,8 +54,10 @@ public class OrcaTele extends OrcaRobot {
             raiseSlider(0);
         } else if (gamepad2.left_bumper) {
             closeClaw();
+        } else if (gamepad2.right_trigger > 0.3) {
+            openClaw();
         }
-        if (Math.abs(x) > Math.abs(y)) {
+        if (abs(x) > abs(y)) {
             y = 0;
         } else {
             x = 0;
@@ -69,7 +80,7 @@ public class OrcaTele extends OrcaRobot {
                 turnByPower(rx);
             }
         } else if (x != 0) {
-            slideByPower(-x*DRIVE_SPEED);
+            slideByPower(-x*SLIDE_SPEED);
         } else {
             driveByPower(-y*DRIVE_SPEED);
         }
@@ -89,9 +100,15 @@ public class OrcaTele extends OrcaRobot {
     public void runOpMode() throws InterruptedException {
         setup();
         openClaw();
+//        motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         waitForStart();
 
         if (isStopRequested()) return;
+
+
 
         raise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         while (opModeIsActive()) {

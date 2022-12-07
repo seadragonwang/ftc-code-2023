@@ -12,8 +12,14 @@ public class OrcaRightAuto extends OrcaAutoBase {
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
         while (raise.isBusy()) {
-            sleep(50);
+            slide(150, DRIVE_SPEED, 0);
+            turn(roundAngle(-getRawHeading()), 0.4);
+            driveDistance(880, 0.8, 0);
+
+
         }
+        openClaw();
+        sleep(100);
     }
 
     protected void raiseSlider2(int targetPos){
@@ -21,10 +27,10 @@ public class OrcaRightAuto extends OrcaAutoBase {
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
         while (raise.isBusy()) {
-            driveDistance(-320, DRIVE_SPEED, 0);
-            turn(180, TURN_SPEED);
-            slide(520, DRIVE_SPEED, 180);
+            sleep(50);
+//            closeClaw();
         }
+
     }
 
     protected void raiseSlider3(int targetPos){
@@ -34,6 +40,9 @@ public class OrcaRightAuto extends OrcaAutoBase {
         while (raise.isBusy()) {
             sleep(100);
         }
+        turn(roundAngle((int) (60-getRawHeading())), 0.6);
+//        slide(30, 0.5, 90);
+        openClaw();
     }
 
 
@@ -59,16 +68,25 @@ public class OrcaRightAuto extends OrcaAutoBase {
         waitForStart();
         SleevePosition position = pipeline.getAnalysis();
         if (opModeIsActive()) {
+            driveDistance(100, 0.6, 0);
             raiseSlider1(ARM_COUNTS_FOR_MEDIUM_JUNCTION);
-            slide(-130, DRIVE_SPEED, 0);
 
-            driveDistance(980, 0.7, 0);
-            turn(roundAngle(-getRawHeading()), 0.4);
-            openClaw();
-            slide(-50, 0.5, 0);
-            driveDistance(-250, DRIVE_SPEED, 0);
+//            slide(-50, 0.5, 0);
+//            driveDistance(-240, DRIVE_SPEED, 0);
+            slide(-60, 0.2, -90);
 
-//            raiseSlider2(ARM_COUNTS_FOR_FIVE_CONES);
+            driveDistance(320, 0.8, 0);
+            turn(roundAngle((int)(180-getRawHeading())), 0.6);
+
+            turn(roundAngle(180-getRawHeading()), 0.6);
+            slide(480, 0.6, -90);
+            raiseSlider2(ARM_COUNTS_FOR_FIVE_CONES);
+            closeClaw();
+            sleep(300);
+            raiseSlider3(ARM_COUNTS_FOR_LOW_JUNCTION - 140);
+
+
+
 //            closeClaw();
 //            sleep(400);
 //            raiseSlider3(ARM_COUNTS_FOR_LOW_JUNCTION);
@@ -83,14 +101,14 @@ public class OrcaRightAuto extends OrcaAutoBase {
 //            openClaw();
 //            raiseSlider4(0);
 //            turn(35, TURN_SPEED);
-            turn(roundAngle(90-getRawHeading()), 0.4);
-
-            if(position == SleevePosition.LEFT){
-                driveDistance(650, DRIVE_SPEED, 90);
-            }else if(position == SleevePosition.RIGHT){
-                driveDistance(-600, DRIVE_SPEED, 90);
-            }
-            raiseSlider3(0);
+//            turn(roundAngle(90-getRawHeading()), 0.4);
+//
+//            if(position == SleevePosition.LEFT){
+//                driveDistance(620, DRIVE_SPEED, 90);
+//            }else if(position == SleevePosition.RIGHT){
+//                driveDistance(-570, DRIVE_SPEED, 90);
+//            }
+//            raiseSlider3(0);
 //            sleep(200);
 //            raiseSlider3(0);
         }

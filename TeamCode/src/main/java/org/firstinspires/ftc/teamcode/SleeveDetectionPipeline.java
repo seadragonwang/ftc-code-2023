@@ -31,7 +31,7 @@ public class SleeveDetectionPipeline extends OpenCvPipeline
     /*
      * The core values which define the location and size of the sample regions
      */
-    static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(312,251);
+    static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(70,270);
     static final int REGION_WIDTH = 55;
     static final int REGION_HEIGHT = 119;
 
@@ -186,7 +186,7 @@ public class SleeveDetectionPipeline extends OpenCvPipeline
                 inputToYCrCb(input);
                 Bitmap bmp2 = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
                 Utils.matToBitmap(input, bmp2);
-                saveBitmap(bmp2);
+//                saveBitmap(bmp2);
 //                    inputToYCrCb(input);
 
                 Core.extractChannel(input, R, 0);
