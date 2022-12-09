@@ -12,7 +12,7 @@ public class OrcaRightAuto extends OrcaAutoBase {
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
         while (raise.isBusy()) {
-            slide(150, DRIVE_SPEED, 0);
+            slide(135, DRIVE_SPEED, 0);
             turn(roundAngle(-getRawHeading()), 0.4);
             driveDistance(880, 0.8, 0);
 
@@ -40,7 +40,7 @@ public class OrcaRightAuto extends OrcaAutoBase {
         while (raise.isBusy()) {
             sleep(100);
         }
-        turn(roundAngle((int) (60-getRawHeading())), 0.6);
+//        turn(roundAngle((int) (60-getRawHeading())), 0.6);
 //        slide(30, 0.5, 90);
         openClaw();
     }
@@ -73,17 +73,22 @@ public class OrcaRightAuto extends OrcaAutoBase {
 
 //            slide(-50, 0.5, 0);
 //            driveDistance(-240, DRIVE_SPEED, 0);
-            slide(-60, 0.2, -90);
-
-            driveDistance(320, 0.8, 0);
-            turn(roundAngle((int)(180-getRawHeading())), 0.6);
-
-            turn(roundAngle(180-getRawHeading()), 0.6);
-            slide(480, 0.6, -90);
-            raiseSlider2(ARM_COUNTS_FOR_FIVE_CONES);
-            closeClaw();
-            sleep(300);
-            raiseSlider3(ARM_COUNTS_FOR_LOW_JUNCTION - 140);
+            if (position != SleevePosition.CENTER) {
+                driveDistance(-350, 0.5, -180);
+                if (position == SleevePosition.LEFT) {
+                    turn(roundAngle((int)(90-getRawHeading())), 0.5);
+                    driveDistance(545, 0.5, 90);
+                    turn(roundAngle((int)(-getRawHeading())), 0.5);
+                } else {
+                    turn(roundAngle((int)(-90-getRawHeading())), 0.5);
+                    driveDistance(540, 0.5, -90);
+                    turn(roundAngle((int)(-getRawHeading())), 0.5);
+                    driveDistance(100, 0.5, 90);
+                }
+            } else {
+                driveDistance(-200, 0.5, -180);
+            }
+            raiseSlider3(0);
 
 
 

@@ -60,7 +60,7 @@ public class OrcaLeftAuto extends OrcaAutoBase {
 
 
             turn(roundAngle(90-getRawHeading()), 0.5);
-            driveDistance(696, 0.5, 90);
+            driveDistance(670, 0.5, 90);
             raise.setTargetPosition(targetPos);
             raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             raise.setPower(1.0);
@@ -128,7 +128,7 @@ public class OrcaLeftAuto extends OrcaAutoBase {
         while (raise.isBusy()) {
             driveDistance(120, 0.6, 0);
 
-            slide(-45, 0.5,0);
+            slide(120, 0.5,0);
 
             turn(roundAngle(180-getRawHeading()), 0.4);
 //            driveDistance(100, -0.5, 0);
@@ -156,8 +156,9 @@ public class OrcaLeftAuto extends OrcaAutoBase {
         waitForStart();
         closeClaw();
         sleep(500);
+        SleevePosition position = pipeline.getAnalysis();
         if (opModeIsActive()) {
-            raiseSlider1(ARM_COUNTS_FOR_MEDIUM_JUNCTION, pipeline.getAnalysis());
+            raiseSlider1(ARM_COUNTS_FOR_MEDIUM_JUNCTION, position);
             openClaw();
 //            slide(-50, 0.5);
 
