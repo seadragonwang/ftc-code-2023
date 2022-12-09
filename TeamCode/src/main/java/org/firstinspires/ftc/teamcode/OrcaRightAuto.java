@@ -56,7 +56,6 @@ public class OrcaRightAuto extends OrcaAutoBase {
         waitForStart();
         closeClaw();
         sleep(500);
-        waitForStart();
         SleevePosition position = pipeline.getAnalysis();
         if (opModeIsActive()) {
             raiseSlider1(ARM_COUNTS_FOR_MEDIUM_JUNCTION);
