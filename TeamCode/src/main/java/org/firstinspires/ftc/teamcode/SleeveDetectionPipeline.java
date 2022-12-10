@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
@@ -31,7 +32,7 @@ public class SleeveDetectionPipeline extends OpenCvPipeline
     /*
      * The core values which define the location and size of the sample regions
      */
-    static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(194,351);
+    static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(232,340);
     static final int REGION_WIDTH = 45;
     static final int REGION_HEIGHT = 100;
 
@@ -110,26 +111,26 @@ public class SleeveDetectionPipeline extends OpenCvPipeline
          * buffer would be re-allocated the first time a real frame
          * was crunched)
          */
-//            inputToCb(firstFrame);
+//        inputToYCrCb(firstFrame);
 
 
-        final String TAG = "bitmap";
-        Mat img = new Mat();
-        String photoPath = "/storage/self/primary/FIRST/data/1webcam-frame-94.jpg";
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            options.inSampleSize = 8;
-//            final Bitmap bmp = BitmapFactory.decodeFile(photoPath);
-//            Utils.bitmapToMat(bmp, img);
+//        final String TAG = "bitmap";
+//        Mat img = new Mat();
+//        String photoPath = "/storage/self/primary/FIRST/data/webcam-frame-init.jpg";
+//        BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inSampleSize = 8;
+//        final Bitmap bmp = BitmapFactory.decodeFile(photoPath);
+//        Utils.bitmapToMat(bmp, img);
 //            /*
 //             * Submats are a persistent reference to a region of the parent
 //             * buffer. Any changes to the child affect the parent, and the
 //             * reverse also holds true.
 //             */
 //
-//            Bitmap bmp2 = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
-//            Utils.matToBitmap(firstFrame,bmp2);
-//            saveBitmap(bmp2);
-//            inputToYCrCb(firstFrame);
+        Bitmap bmp2 = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
+        Utils.matToBitmap(firstFrame, bmp2);
+        saveBitmap(bmp2);
+        inputToYCrCb(firstFrame);
 //
 //            Core.extractChannel(YCrCb, R, 0);
 //            Core.extractChannel(YCrCb, G, 1);
