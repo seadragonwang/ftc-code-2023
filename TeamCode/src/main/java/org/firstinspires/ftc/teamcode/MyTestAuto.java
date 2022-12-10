@@ -13,8 +13,14 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuild
 @Autonomous(name="MyTestAuto")
 public class MyTestAuto extends LinearOpMode {
     SleevePosition position;
+
     @Override
     public void runOpMode() throws InterruptedException {
+        setup();
+        openClaw();
+        sleep(500);
+//        waitForStart();
+//        SleevePosition position = pipeline.getAnalysis();
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.openClaw();
         waitForStart();
@@ -24,6 +30,7 @@ public class MyTestAuto extends LinearOpMode {
         telemetry.update();
         Pose2d startPos = new Pose2d(-62, -40, 0);
         drive.setPoseEstimate(startPos);
+
         TrajectorySequence trajSeq;
         TrajectorySequenceBuilder trajSeqBuilder = drive.trajectorySequenceBuilder(startPos)
                 .addTemporalMarker(() -> {
@@ -147,8 +154,13 @@ public class MyTestAuto extends LinearOpMode {
 
 
         if(isStopRequested()) return;
-
-        drive.followTrajectorySequence(trajSeq);
-
+        SleevePosition position = pipeline.getAnalysis();
+        if (position == SleevePosition.LEFT) {
+            drive.followTrajectorySequence(trajSeqLeft);
+        } else if (position == SleevePosition.CENTER) {
+            drive.followTrajectorySequence(trajSeqMid);
+        } else {
+            drive.followTrajectorySequence(trajSeqRight);
+        }
     }
 }
