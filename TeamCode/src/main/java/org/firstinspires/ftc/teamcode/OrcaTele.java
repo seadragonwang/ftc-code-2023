@@ -32,9 +32,9 @@ public class OrcaTele extends OrcaRobot {
 //        } else {
 //            newPower = power;
 //        }
-        motorFrontLeft.setPower(power);
+        motorFrontLeft.setPower(-power);
         motorBackLeft.setPower(-power);
-        motorFrontRight.setPower(-power);
+        motorFrontRight.setPower(power);
         motorBackRight.setPower(power);
     }
 
@@ -128,11 +128,11 @@ public class OrcaTele extends OrcaRobot {
             }
             int targetRaise = currentRaisedPosition;
             if (gamepad2.y) { // assuming bottom is 0, negative is up
-                targetRaise = (int)((ARM_COUNTS_FOR_LOW_JUNCTION - 100) * 1.4);
+                targetRaise = (int)((ARM_COUNTS_FOR_LOW_JUNCTION - 100));
             } else if (gamepad2.a) {
-                targetRaise = (int)((ARM_COUNTS_FOR_HIGH_JUNCTION - 100) * 1.4);
+                targetRaise = (int)((ARM_COUNTS_FOR_HIGH_JUNCTION - 100) );
             } else if (gamepad2.b) {
-                targetRaise = (int)((ARM_COUNTS_FOR_MEDIUM_JUNCTION - 100) * 1.4) ;
+                targetRaise = (int)((ARM_COUNTS_FOR_MEDIUM_JUNCTION - 100)) ;
             } else if (gamepad2.right_bumper){
                 targetRaise = 0;
             } else {
