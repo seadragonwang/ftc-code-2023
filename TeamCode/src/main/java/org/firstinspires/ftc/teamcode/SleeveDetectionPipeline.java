@@ -31,9 +31,9 @@ public class SleeveDetectionPipeline extends OpenCvPipeline
     /*
      * The core values which define the location and size of the sample regions
      */
-    static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(312,251);
-    static final int REGION_WIDTH = 55;
-    static final int REGION_HEIGHT = 119;
+    static final Point REGION_TOPLEFT_ANCHOR_POINT = new Point(194,351);
+    static final int REGION_WIDTH = 45;
+    static final int REGION_HEIGHT = 100;
 
     /*
      * Points which actually define the sample region rectangles, derived from above values
@@ -115,7 +115,7 @@ public class SleeveDetectionPipeline extends OpenCvPipeline
 
         final String TAG = "bitmap";
         Mat img = new Mat();
-        String photoPath = "/storage/self/primary/FIRST/data/webcam-frame-9.jpg";
+        String photoPath = "/storage/self/primary/FIRST/data/1webcam-frame-94.jpg";
 //            BitmapFactory.Options options = new BitmapFactory.Options();
 //            options.inSampleSize = 8;
 //            final Bitmap bmp = BitmapFactory.decodeFile(photoPath);

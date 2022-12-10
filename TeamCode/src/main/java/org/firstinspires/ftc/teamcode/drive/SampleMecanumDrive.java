@@ -28,11 +28,15 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.SleeveDetectionPipeline;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceRunner;
 import org.firstinspires.ftc.teamcode.util.LynxModuleUtil;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,6 +85,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     protected DcMotorEx raise;
     protected Servo claw;
     protected Servo claw2;
+    protected OpenCvCamera    webcam        = null;
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
@@ -102,6 +107,25 @@ public class SampleMecanumDrive extends MecanumDrive {
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
 
+        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
+        webcam.setViewportRenderingPolicy(OpenCvCamera.ViewportRenderingPolicy.OPTIMIZE_VIEW);
+
+        webcam.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
+            @Override
+            public void onOpened() {
+                webcam.startStreaming(640, 480, OpenCvCameraRotation.UPRIGHT);
+            }
+
+            @Override
+            public void onError(int errorCode) {
+                /*
+                 * This will be called if the camera could not be opened
+                 */
+            }
+        });
+        pipeline = new SleeveDetectionPipeline();
+        webcam.setPipeline(pipeline);
         // TODO: If the hub containing the IMU you are using is mounted so that the "REV" logo does
         // not face up, remap the IMU axes so that the z-axis points upward (normal to the floor.)
         //
@@ -328,13 +352,6 @@ public class SampleMecanumDrive extends MecanumDrive {
         raise.setTargetPosition(targetPos);
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
-//        while (raise.isBusy()) {
-//            try {
-//                sleep(50);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        }
     }
 
     public void openClaw(){
