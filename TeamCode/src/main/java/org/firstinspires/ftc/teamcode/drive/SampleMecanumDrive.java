@@ -81,7 +81,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
-    protected SleeveDetectionPipeline pipeline   = null;
+    public SleeveDetectionPipeline pipeline   = null;
     protected DcMotorEx raise;
     protected Servo claw;
     protected Servo claw2;

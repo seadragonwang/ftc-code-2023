@@ -8,15 +8,24 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
+import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 
 @Autonomous(name="MyTestAuto")
 public class MyTestAuto extends LinearOpMode {
+    SleevePosition position;
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        drive.openClaw();
+        waitForStart();
+        sleep(2000);
+        position = drive.pipeline.getAnalysis();
+        telemetry.addData("pos", position);
+        telemetry.update();
         Pose2d startPos = new Pose2d(-62, -40, 0);
         drive.setPoseEstimate(startPos);
-        TrajectorySequence trajSeq = drive.trajectorySequenceBuilder(startPos)
+        TrajectorySequence trajSeq;
+        TrajectorySequenceBuilder trajSeqBuilder = drive.trajectorySequenceBuilder(startPos)
                 .addTemporalMarker(() -> {
                     drive.closeClaw();
                 })
@@ -106,8 +115,18 @@ public class MyTestAuto extends LinearOpMode {
                     drive.raiseSlider(0);
                 })
                 .turn(Math.toRadians(31))
-                .strafeRight(2)
-                .forward(42)
+                .strafeRight(4);
+        if(position == SleevePosition.LEFT){
+            trajSeq = trajSeqBuilder.forward(42)
+                    .build();
+        }else if(position == SleevePosition.RIGHT){
+            trajSeq = trajSeqBuilder.back(5)
+                    .build();
+        }else{
+            trajSeq = trajSeqBuilder.forward(18)
+                    .build();
+        }
+
 //                .addTemporalMarker(()->{ // Fourth stack cone
 //                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_ONE_CONES);
 //                })
@@ -125,9 +144,8 @@ public class MyTestAuto extends LinearOpMode {
 //                .addTemporalMarker(() -> {
 //                    drive.openClaw();
 //                })
-                .build();
-        drive.openClaw();
-        waitForStart();
+
+
         if(isStopRequested()) return;
 
         drive.followTrajectorySequence(trajSeq);
