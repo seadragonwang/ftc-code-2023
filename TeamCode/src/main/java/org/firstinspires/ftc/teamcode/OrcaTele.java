@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import static java.lang.Math.abs;
+
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name="OrcaTele",group="")
 public class OrcaTele extends OrcaRobot {
     static final double     DRIVE_SPEED             = 0.6;     // Max driving speed for better distance accuracy.
+    static final double SLIDE_SPEED = 0.7;
 
     /**
      * Power is positive, robot will slide left, otherwise slide right
@@ -13,7 +16,7 @@ public class OrcaTele extends OrcaRobot {
      */
     protected void slideByPower(double power){
         motorFrontLeft.setPower(power);
-        motorBackLeft.setPower(-power);
+        motorBackLeft.setPower(-power*1.01);
         motorFrontRight.setPower(power);
         motorBackRight.setPower(-power);
     }
@@ -23,17 +26,23 @@ public class OrcaTele extends OrcaRobot {
      * @param power
      */
     protected void driveByPower(double power){
-        motorFrontLeft.setPower(-power);
+//        double newPower;
+//        if(abs(power) < 0.01) {
+//            newPower = 0;
+//        } else {
+//            newPower = power;
+//        }
+        motorFrontLeft.setPower(power);
         motorBackLeft.setPower(-power);
-        motorFrontRight.setPower(power);
+        motorFrontRight.setPower(-power);
         motorBackRight.setPower(power);
     }
 
     protected void turnByPower(double power){
-        motorFrontLeft.setPower(-power / 2);
-        motorBackLeft.setPower(-power / 2);
-        motorFrontRight.setPower(-power / 2);
-        motorBackRight.setPower(-power / 2);
+        motorFrontLeft.setPower(-power / 1.5);
+        motorBackLeft.setPower(-power / 1.5);
+        motorFrontRight.setPower(-power / 1.5);
+        motorBackRight.setPower(-power / 1.5);
     }
 
     protected void operate(){
@@ -45,8 +54,10 @@ public class OrcaTele extends OrcaRobot {
             raiseSlider(0);
         } else if (gamepad2.left_bumper) {
             closeClaw();
+        } else if (gamepad2.right_trigger > 0.3) {
+            openClaw();
         }
-        if (Math.abs(x) > Math.abs(y)) {
+        if (abs(x) > abs(y)) {
             y = 0;
         } else {
             x = 0;
@@ -69,7 +80,7 @@ public class OrcaTele extends OrcaRobot {
                 turnByPower(rx);
             }
         } else if (x != 0) {
-            slideByPower(-x*DRIVE_SPEED);
+            slideByPower(-x*SLIDE_SPEED);
         } else {
             driveByPower(-y*DRIVE_SPEED);
         }
@@ -89,9 +100,15 @@ public class OrcaTele extends OrcaRobot {
     public void runOpMode() throws InterruptedException {
         setup();
         openClaw();
+//        motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         waitForStart();
 
         if (isStopRequested()) return;
+
+
 
         raise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         while (opModeIsActive()) {
@@ -111,11 +128,11 @@ public class OrcaTele extends OrcaRobot {
             }
             int targetRaise = currentRaisedPosition;
             if (gamepad2.y) { // assuming bottom is 0, negative is up
-                targetRaise = ARM_COUNTS_FOR_LOW_JUNCTION - 100;
+                targetRaise = (int)((ARM_COUNTS_FOR_LOW_JUNCTION - 100) * 1.4);
             } else if (gamepad2.a) {
-                targetRaise = ARM_COUNTS_FOR_HIGH_JUNCTION - 100;
+                targetRaise = (int)((ARM_COUNTS_FOR_HIGH_JUNCTION - 100) * 1.4);
             } else if (gamepad2.b) {
-                targetRaise = ARM_COUNTS_FOR_MEDIUM_JUNCTION - 100;
+                targetRaise = (int)((ARM_COUNTS_FOR_MEDIUM_JUNCTION - 100) * 1.4) ;
             } else if (gamepad2.right_bumper){
                 targetRaise = 0;
             } else {

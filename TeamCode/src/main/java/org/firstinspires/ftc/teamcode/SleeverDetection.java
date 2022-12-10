@@ -323,7 +323,7 @@ public class SleeverDetection extends LinearOpMode
         private int captureCounter = 0;
         private File captureDirectory = AppUtil.ROBOT_DATA_DIR;
         private void saveBitmap(Bitmap bitmap) {
-            File file = new File(captureDirectory, String.format(Locale.getDefault(), "webcam-frame-dup-%d.jpg", captureCounter++));
+            File file = new File(captureDirectory, String.format(Locale.getDefault(), "222webcam-frame-dup-%d.jpg", captureCounter++));
             try {
                 try (FileOutputStream outputStream = new FileOutputStream(file)) {
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
