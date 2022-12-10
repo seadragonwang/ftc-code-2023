@@ -184,10 +184,10 @@ public class SleeveDetectionPipeline extends OpenCvPipeline
             if (avg > 0) {
                 pictureTaken = Boolean.TRUE;
                 inputToYCrCb(input);
-                Bitmap bmp2 = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
-                Utils.matToBitmap(input, bmp2);
-                saveBitmap(bmp2);
-//                    inputToYCrCe/b(input);
+//                Bitmap bmp2 = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
+//                Utils.matToBitmap(input, bmp2);
+//                saveBitmap(bmp2);
+//                inputToYCrCb(input);
 
                 Core.extractChannel(input, R, 0);
                 Core.extractChannel(input, G, 1);

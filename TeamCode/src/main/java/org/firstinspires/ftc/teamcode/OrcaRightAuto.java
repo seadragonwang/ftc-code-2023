@@ -65,7 +65,6 @@ public class OrcaRightAuto extends OrcaAutoBase {
         waitForStart();
         closeClaw();
         sleep(500);
-        waitForStart();
         SleevePosition position = pipeline.getAnalysis();
         if (opModeIsActive()) {
             driveDistance(100, 0.6, 0);
