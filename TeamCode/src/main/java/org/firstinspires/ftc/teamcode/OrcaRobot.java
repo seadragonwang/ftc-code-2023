@@ -34,14 +34,14 @@ public abstract class OrcaRobot extends LinearOpMode {
     public static final double PULLEY_DIAMETER_IN_MM = 35.65;
     public static final int ARM_COUNTS_PER_MILLIMETER = (int) ((COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO) / (PULLEY_DIAMETER_IN_MM * Math.PI));
     public static final double ARM_FULL_SPEED_IN_COUNTS = COUNTS_PER_ENCODER_REV * ARM_GEAR_RATIO * ARM_MOTOR_SPEED_IN_RPM / 60;
-    public static final int ARM_COUNTS_FOR_HIGH_JUNCTION = -(int) ((HIGH_JUNCTION_IN_MILLIMETER+125) * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_MEDIUM_JUNCTION = -(int) ((MEDIUM_JUNCTION_IN_MILLIMETER+90) * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_LOW_JUNCTION = -(int) ((LOW_JUNCTION_IN_MILLIMETER+80) * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_FIVE_CONES = -(int) (160 * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_FOUR_CONES = -(int) ((125) * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_THREE_CONES = -(int) (92 * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_TWO_CONES = -(int) (62 * ARM_COUNTS_PER_MILLIMETER);
-    public static final int ARM_COUNTS_FOR_ONE_CONES = -(int) (12 * ARM_COUNTS_PER_MILLIMETER);
+    public static final int ARM_COUNTS_FOR_HIGH_JUNCTION = -(int) ((HIGH_JUNCTION_IN_MILLIMETER+125) * ARM_COUNTS_PER_MILLIMETER*435/312);
+    public static final int ARM_COUNTS_FOR_MEDIUM_JUNCTION = -(int) ((MEDIUM_JUNCTION_IN_MILLIMETER+90) * ARM_COUNTS_PER_MILLIMETER *435/312);
+    public static final int ARM_COUNTS_FOR_LOW_JUNCTION = -(int) ((LOW_JUNCTION_IN_MILLIMETER+80) * ARM_COUNTS_PER_MILLIMETER * 435/312);
+    public static final int ARM_COUNTS_FOR_FIVE_CONES = -(int) (160 * ARM_COUNTS_PER_MILLIMETER*435/312);
+    public static final int ARM_COUNTS_FOR_FOUR_CONES = -(int) ((125) * ARM_COUNTS_PER_MILLIMETER*435/312);
+    public static final int ARM_COUNTS_FOR_THREE_CONES = -(int) (92 * ARM_COUNTS_PER_MILLIMETER*435/312);
+    public static final int ARM_COUNTS_FOR_TWO_CONES = -(int) (62 * ARM_COUNTS_PER_MILLIMETER*435/312);
+    public static final int ARM_COUNTS_FOR_ONE_CONES = -(int) (12 * ARM_COUNTS_PER_MILLIMETER*435/312);
     protected DcMotorEx motorFrontLeft;
     protected DcMotorEx motorBackLeft;
     protected DcMotorEx motorFrontRight;
@@ -49,6 +49,7 @@ public abstract class OrcaRobot extends LinearOpMode {
     protected DcMotorEx raise;
     protected Servo claw;
     protected Servo claw2;
+    protected Servo turnArm;
 
     protected void openClaw(){
         claw.setPosition(1);
@@ -71,6 +72,7 @@ public abstract class OrcaRobot extends LinearOpMode {
         raise = (DcMotorEx) hardwareMap.dcMotor.get("raise");
         claw = hardwareMap.servo.get("claw");
         claw2 = hardwareMap.servo.get("claw2");
+        turnArm = hardwareMap.servo.get("turnArm");
     }
 
     public void setDrivingMotorMode(DcMotor.RunMode mode) {
