@@ -109,7 +109,7 @@ public class OrcaTele extends OrcaRobot {
         if (isStopRequested()) return;
 
 
-        double armPos = 0.42;
+
         raise.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         while (opModeIsActive()) {
 
@@ -118,28 +118,27 @@ public class OrcaTele extends OrcaRobot {
 
             int currentRaisedPosition = raise.getCurrentPosition();
             telemetry.addData("armPos", currentRaisedPosition);
-            int raiseStep = (int) (150*gamepad2.left_stick_y);
+            int raiseStep = 0;
+            if(gamepad2.dpad_down) {
+                raiseStep = 100;
+            } else if (gamepad2.dpad_up) {
+                raiseStep = -100;
+            } else {
+                raiseStep = 0;
+            }
             int targetRaise = currentRaisedPosition;
             if (gamepad2.y) { // assuming bottom is 0, negative is up
-                targetRaise = (int)((ARM_COUNTS_FOR_LOW_JUNCTION - 100) * 435/312);
+                targetRaise = (int)((ARM_COUNTS_FOR_LOW_JUNCTION - 100));
             } else if (gamepad2.a) {
-                targetRaise = (int)((ARM_COUNTS_FOR_HIGH_JUNCTION - 100)*435/312 );
+                targetRaise = (int)((ARM_COUNTS_FOR_HIGH_JUNCTION - 100) );
             } else if (gamepad2.b) {
-                targetRaise = (int)(((ARM_COUNTS_FOR_MEDIUM_JUNCTION - 100) * 435/312));
+                targetRaise = (int)((ARM_COUNTS_FOR_MEDIUM_JUNCTION - 100)) ;
             } else if (gamepad2.right_bumper){
                 targetRaise = 0;
             } else {
                 targetRaise = currentRaisedPosition + raiseStep;
             }
 
-            if (gamepad2.dpad_up) {
-                armPos = 0.42;
-            } else if (gamepad2.dpad_left) {
-                armPos = 0.1;
-            } else if (gamepad2.dpad_right) {
-                armPos = 0.75;
-            }
-            turnArm.setPosition(armPos);
             raiseSlider(targetRaise);
             telemetry.addData("clawPos", claw.getPosition());
             telemetry.addData("claw2Pos", claw2.getPosition());

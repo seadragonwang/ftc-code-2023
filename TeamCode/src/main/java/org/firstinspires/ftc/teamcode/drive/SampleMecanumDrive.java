@@ -63,7 +63,7 @@ public class SampleMecanumDrive extends MecanumDrive {
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
-    public static double LATERAL_MULTIPLIER = 0.9547 * 1.19;
+    public static double LATERAL_MULTIPLIER = 1.19;
 
     public static double VX_WEIGHT = 1;
     public static double VY_WEIGHT = 1;
@@ -86,7 +86,6 @@ public class SampleMecanumDrive extends MecanumDrive {
     protected Servo claw;
     protected Servo claw2;
     protected OpenCvCamera    webcam        = null;
-    protected Servo turnArm;
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
@@ -158,7 +157,6 @@ public class SampleMecanumDrive extends MecanumDrive {
         claw2 = hardwareMap.servo.get("claw2");
         rightRear = hardwareMap.get(DcMotorEx.class, "backRight");
         rightFront = hardwareMap.get(DcMotorEx.class, "frontRight");
-        turnArm = hardwareMap.servo.get("turnArm");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -355,9 +353,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         raise.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         raise.setPower(1.0);
     }
-    public void turnArm(double pos) {
-        turnArm.setPosition(pos);
-    }
+
     public void openClaw(){
         claw.setPosition(1);
         claw2.setPosition(0);
