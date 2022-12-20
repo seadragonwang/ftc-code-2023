@@ -11,14 +11,14 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 
 @Autonomous(name="MyTestAuto")
-public class MyTestAuto extends LinearOpMode {
+public class MyTestAuto extends OrcaAutoBase {
     SleevePosition position;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        setup();
-        openClaw();
-        sleep(500);
+//        setup();
+//        openClaw();
+//        sleep(500);
 //        waitForStart();
 //        SleevePosition position = pipeline.getAnalysis();
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
@@ -49,9 +49,9 @@ public class MyTestAuto extends LinearOpMode {
                 .addTemporalMarker(()->{// First stack cone
                     drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_FIVE_CONES);
                 })
-                .forward(12)
+                .forward(13.5)
                 .turn(Math.toRadians(180))
-                .strafeLeft(16.6)
+                .strafeLeft(19)
                 .addTemporalMarker(() -> {
                     drive.closeClaw();
                 })
@@ -71,6 +71,7 @@ public class MyTestAuto extends LinearOpMode {
                 .turn(Math.toRadians(120))
                 .addTemporalMarker(() -> {
                     drive.closeClaw();
+
                 })
                 .waitSeconds(0.3)
                 .addTemporalMarker(()->{
@@ -130,9 +131,9 @@ public class MyTestAuto extends LinearOpMode {
             trajSeq = trajSeqBuilder.back(5)
                     .build();
         }else{
-            trajSeq = trajSeqBuilder.forward(18)
+            trajSeq = trajSeqBuilder.forward(22)
                     .build();
-        }
+                    }
 
 //                .addTemporalMarker(()->{ // Fourth stack cone
 //                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_ONE_CONES);
@@ -154,13 +155,7 @@ public class MyTestAuto extends LinearOpMode {
 
 
         if(isStopRequested()) return;
-        SleevePosition position = pipeline.getAnalysis();
-        if (position == SleevePosition.LEFT) {
-            drive.followTrajectorySequence(trajSeqLeft);
-        } else if (position == SleevePosition.CENTER) {
-            drive.followTrajectorySequence(trajSeqMid);
-        } else {
-            drive.followTrajectorySequence(trajSeqRight);
-        }
+//        SleevePosition position = pipeline.getAnalysis();
+        drive.followTrajectorySequence(trajSeq);
     }
 }
