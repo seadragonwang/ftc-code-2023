@@ -40,18 +40,20 @@ public class MyTestAuto extends OrcaAutoBase {
                 .addTemporalMarker(()->{
                     drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_MEDIUM_JUNCTION);
                 })
-                .strafeLeft(5)
-                .forward(37)
+                .strafeLeft(6)
+                .forward(39.25)
                 .addTemporalMarker(() -> {
                     drive.openClaw();
                 })
                 .waitSeconds(0.3)
+
+                .forward(13.25)
                 .addTemporalMarker(()->{// First stack cone
-                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_FIVE_CONES);
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_FIVE_CONES - 30);
                 })
-                .forward(13.5)
-                .turn(Math.toRadians(180))
-                .strafeLeft(19)
+                .waitSeconds(0.2)
+                .turn(Math.toRadians(182))
+                .strafeLeft(19.15)
                 .addTemporalMarker(() -> {
                     drive.closeClaw();
                 })
@@ -60,15 +62,15 @@ public class MyTestAuto extends OrcaAutoBase {
                     drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION);
                 })
                 .waitSeconds(0.3)
-                .turn(-Math.toRadians(120))
+                .turn(-Math.toRadians(115))
                 .addTemporalMarker(() -> {
                     drive.openClaw();
                 })
                 .waitSeconds(0.2)
                 .addTemporalMarker(()->{// Second stack cone
-                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_FOUR_CONES);
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_FOUR_CONES - 30);
                 })
-                .turn(Math.toRadians(120))
+                .turn(Math.toRadians(115))
                 .addTemporalMarker(() -> {
                     drive.closeClaw();
 
@@ -78,16 +80,16 @@ public class MyTestAuto extends OrcaAutoBase {
                     drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION);
                 })
                 .waitSeconds(0.3)
-                .turn(-Math.toRadians(121))
+                .turn(-Math.toRadians(116))
                 .addTemporalMarker(() -> {
                     drive.openClaw();
                 })
                 .waitSeconds(0.3)
                 .addTemporalMarker(()->{ // Third stack cone
-                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_THREE_CONES);
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_THREE_CONES-30);
                 })
                 .waitSeconds(0.3)
-                .turn(Math.toRadians(121))
+                .turn(Math.toRadians(116))
                 .addTemporalMarker(() -> {
                     drive.closeClaw();
                 })
@@ -96,16 +98,16 @@ public class MyTestAuto extends OrcaAutoBase {
                     drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION);
                 })
                 .waitSeconds(0.3)
-                .turn(-Math.toRadians(121))
+                .turn(-Math.toRadians(116))
                 .addTemporalMarker(() -> {
                     drive.openClaw();
                 })
                 .waitSeconds(0.3)
                 .addTemporalMarker(()->{ // Fourth stack cone
-                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_TWO_CONES);
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_TWO_CONES-30);
                 })
                 .waitSeconds(0.3)
-                .turn(Math.toRadians(121))
+                .turn(Math.toRadians(116))
                 .addTemporalMarker(() -> {
                     drive.closeClaw();
                 })
@@ -114,7 +116,7 @@ public class MyTestAuto extends OrcaAutoBase {
                     drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION);
                 })
                 .waitSeconds(0.3)
-                .turn(-Math.toRadians(121))
+                .turn(-Math.toRadians(116))
                 .addTemporalMarker(() -> {
                     drive.openClaw();
                 })
@@ -122,11 +124,12 @@ public class MyTestAuto extends OrcaAutoBase {
                 .addTemporalMarker(()->{
                     drive.raiseSlider(0);
                 })
-                .turn(Math.toRadians(31))
-                .strafeRight(4);
+                .turn(Math.toRadians(30));
+//                .strafeRight(4);
         if(position == SleevePosition.LEFT){
-            trajSeq = trajSeqBuilder.forward(42)
-                    .build();
+//            trajSeq = trajSeqBuilder.splineTo(new Vector2d(-6,-6), Math.toRadians(90))
+              trajSeq = trajSeqBuilder.forward(42)
+                .build();
         }else if(position == SleevePosition.RIGHT){
             trajSeq = trajSeqBuilder.back(5)
                     .build();
