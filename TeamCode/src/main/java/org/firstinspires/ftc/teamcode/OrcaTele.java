@@ -7,8 +7,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 @TeleOp(name="OrcaTele",group="")
 public class OrcaTele extends OrcaRobot {
-    static final double     DRIVE_SPEED             = 0.6;     // Max driving speed for better distance accuracy.
-    static final double SLIDE_SPEED = 0.7;
+    static final double     DRIVE_SPEED             = 0.65;     // Max driving speed for better distance accuracy.
+    static final double SLIDE_SPEED = 0.75;
 
     /**
      * Power is positive, robot will slide left, otherwise slide right
@@ -51,7 +51,7 @@ public class OrcaTele extends OrcaRobot {
         if (gamepad2.x) {
             openClaw();
             sleep(300);
-            raiseSlider(0);
+            raiseSlider(50);
         } else if (gamepad2.left_bumper) {
             closeClaw();
         } else if (gamepad2.right_trigger > 0.3) {
@@ -100,10 +100,10 @@ public class OrcaTele extends OrcaRobot {
     public void runOpMode() throws InterruptedException {
         setup();
         openClaw();
-        motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         waitForStart();
 
         if (isStopRequested()) return;
@@ -134,7 +134,7 @@ public class OrcaTele extends OrcaRobot {
             } else if (gamepad2.b) {
                 targetRaise = (int)((ARM_COUNTS_FOR_MEDIUM_JUNCTION - 100)) ;
             } else if (gamepad2.right_bumper){
-                targetRaise = 0;
+                targetRaise = 30;
             } else {
                 targetRaise = currentRaisedPosition + raiseStep;
             }
