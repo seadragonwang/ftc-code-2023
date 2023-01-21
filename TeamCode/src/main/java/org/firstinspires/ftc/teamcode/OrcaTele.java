@@ -51,7 +51,7 @@ public class OrcaTele extends OrcaRobot {
         if (gamepad2.x) {
             openClaw();
             sleep(300);
-            raiseSlider(50);
+            raiseSlider(-50);
         } else if (gamepad2.left_bumper) {
             closeClaw();
         } else if (gamepad2.right_trigger > 0.3) {
