@@ -4,11 +4,13 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.GyroSensor;
 
@@ -48,7 +50,9 @@ public abstract class OrcaRobot extends LinearOpMode {
     protected DcMotorEx motorBackRight;
     protected DcMotorEx raise;
     protected Servo claw;
+
     protected Servo claw2;
+    public DistanceSensor leftSensor;
 
     protected void openClaw(){
         claw.setPosition(1);
@@ -68,9 +72,11 @@ public abstract class OrcaRobot extends LinearOpMode {
         motorBackLeft = (DcMotorEx) hardwareMap.dcMotor.get("backLeft");
         motorFrontRight = (DcMotorEx) hardwareMap.dcMotor.get("frontRight");
         motorBackRight = (DcMotorEx) hardwareMap.dcMotor.get("backRight");
+
         raise = (DcMotorEx) hardwareMap.dcMotor.get("raise");
         claw = hardwareMap.servo.get("claw");
         claw2 = hardwareMap.servo.get("claw2");
+        leftSensor = hardwareMap.get(DistanceSensor.class, "leftSensor");
     }
 
     public void setDrivingMotorMode(DcMotor.RunMode mode) {
@@ -82,4 +88,8 @@ public abstract class OrcaRobot extends LinearOpMode {
     public boolean isStillDriving() {
         return motorFrontLeft.isBusy() || motorFrontRight.isBusy() || motorBackLeft.isBusy() || motorBackRight.isBusy();
     }
+//    public void dropCone() {
+//        double distance = leftSensor.getDistance(DistanceUnit.INCH);
+//        return distance;
+//    }
 }

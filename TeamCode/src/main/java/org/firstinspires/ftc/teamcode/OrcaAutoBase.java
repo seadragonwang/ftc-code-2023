@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.util.Range;
 import com.qualcomm.robotcore.util.RobotLog;
 
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.opencv.android.Utils;
@@ -52,6 +54,7 @@ public abstract class OrcaAutoBase extends OrcaRobot {
     protected double  turnSpeed     = 0;
     protected double  leftSpeed     = 0;
     protected double  rightSpeed    = 0;
+
 
     @Override
     protected void setup(){
@@ -185,7 +188,10 @@ public abstract class OrcaAutoBase extends OrcaRobot {
             sendTelemetry();
         }
     }
-
+    // left distance sensor is under claw
+    public double getLeftDistance() {
+        return leftSensor.getDistance(DistanceUnit.INCH);
+    }
     public int roundAngle(double angle) {
         if (angle > 180) {
             return (int)(angle-360);

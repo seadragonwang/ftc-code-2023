@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
@@ -16,15 +17,19 @@ public class MyTestAuto extends OrcaAutoBase {
 
     @Override
     public void runOpMode() throws InterruptedException {
-//        setup();
+        setup();
 //        openClaw();
 //        sleep(500);
 //        waitForStart();
 //        SleevePosition position = pipeline.getAnalysis();
+        telemetry.addData("test", "0");
+        telemetry.update();
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        telemetry.addData("test1", "0");
+        telemetry.update();
         drive.openClaw();
         waitForStart();
-        sleep(2000);
+//        sleep(2000);
         position = drive.pipeline.getAnalysis();
         telemetry.addData("pos", position);
         telemetry.update();
@@ -63,6 +68,7 @@ public class MyTestAuto extends OrcaAutoBase {
                 })
                 .waitSeconds(0.3)
                 .turn(-Math.toRadians(119))
+//                .strafeLeft(leftSensor.getDistance(DistanceUnit.INCH)-3.5)
                 .addTemporalMarker(() -> {
                     drive.openClaw();
                 })
