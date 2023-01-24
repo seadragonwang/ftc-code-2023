@@ -159,6 +159,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         claw2 = hardwareMap.servo.get("claw2");
         rightRear = hardwareMap.get(DcMotorEx.class, "backRight");
         rightFront = hardwareMap.get(DcMotorEx.class, "frontRight");
+        leftSensor = hardwareMap.get(DistanceSensor.class, "leftSensor");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
