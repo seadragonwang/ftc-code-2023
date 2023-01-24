@@ -71,7 +71,7 @@ public class MyTestAuto extends LinearOpMode {
                 .addTemporalMarker(()->{
                     drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION-75);
                 })
-                .waitSeconds(0.3)
+                .waitSeconds(0.2)
                 .turn(-Math.toRadians(120))
                 .addTemporalMarker(() -> {
                     drive.openClaw();
@@ -90,7 +90,7 @@ public class MyTestAuto extends LinearOpMode {
                 .addTemporalMarker(()->{
                     drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION-75);
                 })
-                .waitSeconds(0.3)
+                .waitSeconds(0.2)
                 .turn(-Math.toRadians(121))
                 .addTemporalMarker(() -> {
                     drive.openClaw();
@@ -109,7 +109,7 @@ public class MyTestAuto extends LinearOpMode {
                 .addTemporalMarker(()->{
                     drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION-75);
                 })
-                .waitSeconds(0.3)
+                .waitSeconds(0.2)
                 .turn(-Math.toRadians(123))
                 .addTemporalMarker(() -> {
                     drive.openClaw();
@@ -127,7 +127,7 @@ public class MyTestAuto extends LinearOpMode {
                 .addTemporalMarker(()->{
                     drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION-75);
                 })
-                .waitSeconds(0.3)
+                .waitSeconds(0.2)
                 .turn(-Math.toRadians(123))
                 .addTemporalMarker(() -> {
                     drive.openClaw();
