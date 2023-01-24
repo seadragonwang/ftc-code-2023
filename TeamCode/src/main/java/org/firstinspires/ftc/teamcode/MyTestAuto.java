@@ -32,7 +32,7 @@ public class MyTestAuto extends LinearOpMode {
                 })
                 .waitSeconds(0.5)
                 .addTemporalMarker(()->{
-                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_MEDIUM_JUNCTION-75);
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_MEDIUM_JUNCTION);
                 })
                 .forward(38)
                 .addTemporalMarker(() -> {
