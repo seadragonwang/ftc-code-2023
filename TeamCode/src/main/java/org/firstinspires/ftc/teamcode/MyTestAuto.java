@@ -11,15 +11,22 @@ import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
 
 @Autonomous(name="MyTestAuto")
-public class MyTestAuto extends LinearOpMode {
+public class MyTestAuto extends OrcaAutoBase {
     SleevePosition position;
 
     @Override
     public void runOpMode() throws InterruptedException {
+        setup();
+        openClaw();
+        sleep(500);
+//        waitForStart();
+//        SleevePosition position = pipeline.getAnalysis();
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
+        telemetry.addData("test1", "0");
+        telemetry.update();
         drive.openClaw();
         waitForStart();
-        sleep(2000);
+//        sleep(2000);
         position = drive.pipeline.getAnalysis();
         telemetry.addData("pos", position);
         telemetry.update();
@@ -33,61 +40,66 @@ public class MyTestAuto extends LinearOpMode {
                 })
                 .waitSeconds(0.5)
                 .addTemporalMarker(()->{
-                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION);
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_MEDIUM_JUNCTION-75);
                 })
-                .strafeLeft(5)
-                .forward(37)
+                .strafeLeft(4)
+                .forward(39)
                 .addTemporalMarker(() -> {
                     drive.openClaw();
                 })
                 .waitSeconds(0.3)
+
+                .forward(11.25)
                 .addTemporalMarker(()->{// First stack cone
-                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_FIVE_CONES);
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_FIVE_CONES - 80);
                 })
-                .forward(12)
-                .turn(Math.toRadians(180))
-                .strafeLeft(16.6)
+                .waitSeconds(0.2)
+                .turn(Math.toRadians(182))
+                .strafeLeft(19.5)
                 .addTemporalMarker(() -> {
                     drive.closeClaw();
                 })
                 .waitSeconds(0.3)
                 .addTemporalMarker(()->{
-                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION);
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION - 75);
+                })
+                .waitSeconds(0.3)
+                .turn(-Math.toRadians(119))
+//                .strafeLeft(leftSensor.getDistance(DistanceUnit.INCH)-3.5)
+                .addTemporalMarker(() -> {
+                    drive.openClaw();
+                })
+                .waitSeconds(0.2)
+                .addTemporalMarker(()->{// Second stack cone
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_FOUR_CONES - 80);
+                })
+                .turn(Math.toRadians(119))
+                .addTemporalMarker(() -> {
+                    drive.closeClaw();
+
+                })
+                .waitSeconds(0.3)
+                .addTemporalMarker(()->{
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION-75);
                 })
                 .waitSeconds(0.3)
                 .turn(-Math.toRadians(120))
                 .addTemporalMarker(() -> {
                     drive.openClaw();
                 })
-                .waitSeconds(0.2)
-                .addTemporalMarker(()->{// Second stack cone
-                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_FOUR_CONES);
-                })
-                .turn(Math.toRadians(120))
-                .addTemporalMarker(() -> {
-                    drive.closeClaw();
-                })
-                .waitSeconds(0.3)
-                .addTemporalMarker(()->{
-                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION);
-                })
-                .waitSeconds(0.3)
-                .turn(-Math.toRadians(121))
-                .addTemporalMarker(() -> {
-                    drive.openClaw();
-                })
                 .waitSeconds(0.3)
                 .addTemporalMarker(()->{ // Third stack cone
-                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_THREE_CONES);
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_THREE_CONES-80);
                 })
                 .waitSeconds(0.3)
                 .turn(Math.toRadians(121))
+                .strafeLeft(0.2)
                 .addTemporalMarker(() -> {
                     drive.closeClaw();
                 })
                 .waitSeconds(0.3)
                 .addTemporalMarker(()->{
-                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION);
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION-75);
                 })
                 .waitSeconds(0.3)
                 .turn(-Math.toRadians(121))
@@ -96,19 +108,20 @@ public class MyTestAuto extends LinearOpMode {
                 })
                 .waitSeconds(0.3)
                 .addTemporalMarker(()->{ // Fourth stack cone
-                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_TWO_CONES);
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_TWO_CONES-80);
                 })
                 .waitSeconds(0.3)
-                .turn(Math.toRadians(121))
+                .turn(Math.toRadians(123))
+                .strafeLeft(0.1)
                 .addTemporalMarker(() -> {
                     drive.closeClaw();
                 })
                 .waitSeconds(0.3)
                 .addTemporalMarker(()->{
-                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION);
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_LOW_JUNCTION-75);
                 })
                 .waitSeconds(0.3)
-                .turn(-Math.toRadians(121))
+                .turn(-Math.toRadians(123))
                 .addTemporalMarker(() -> {
                     drive.openClaw();
                 })
@@ -116,18 +129,20 @@ public class MyTestAuto extends LinearOpMode {
                 .addTemporalMarker(()->{
                     drive.raiseSlider(0);
                 })
-                .turn(Math.toRadians(31))
-                .strafeRight(4);
+                .turn(Math.toRadians(29))
+                .strafeRight(2);
         if(position == SleevePosition.LEFT){
-            trajSeq = trajSeqBuilder.forward(42)
-                    .build();
+//            trajSeq = trajSeqBuilder.splineTo(new Vector2d(-6,-6), Math.toRadians(90))
+              trajSeq = trajSeqBuilder.forward(42.75)
+                      .strafeLeft(3)
+                .build();
         }else if(position == SleevePosition.RIGHT){
             trajSeq = trajSeqBuilder.back(5)
                     .build();
         }else{
-            trajSeq = trajSeqBuilder.forward(18)
+            trajSeq = trajSeqBuilder.forward(19)
                     .build();
-        }
+                    }
 
 //                .addTemporalMarker(()->{ // Fourth stack cone
 //                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_ONE_CONES);
@@ -149,8 +164,7 @@ public class MyTestAuto extends LinearOpMode {
 
 
         if(isStopRequested()) return;
-
+//        SleevePosition position = pipeline.getAnalysis();
         drive.followTrajectorySequence(trajSeq);
-
     }
 }
