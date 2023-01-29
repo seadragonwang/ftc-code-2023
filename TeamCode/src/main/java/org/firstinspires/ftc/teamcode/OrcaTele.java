@@ -5,6 +5,8 @@ import static java.lang.Math.abs;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
 @TeleOp(name="OrcaTele",group="")
 public class OrcaTele extends OrcaRobot {
     static final double     DRIVE_SPEED             = 0.65;     // Max driving speed for better distance accuracy.
@@ -142,6 +144,7 @@ public class OrcaTele extends OrcaRobot {
             raiseSlider(targetRaise);
             telemetry.addData("clawPos", claw.getPosition());
             telemetry.addData("claw2Pos", claw2.getPosition());
+            telemetry.addData("distance in inches", leftSensor.getDistance(DistanceUnit.INCH));
             telemetry.update();
         }
     }
