@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
+import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
@@ -36,7 +37,7 @@ public class MyTestAuto extends LinearOpMode {
                 .addTemporalMarker(()->{
                     drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_HIGH_JUNCTION);
                 })
-                .forward(61)
+                .forward(49)
                 .addTemporalMarker(() -> {
                     drive.openClaw();
                 })
@@ -44,8 +45,8 @@ public class MyTestAuto extends LinearOpMode {
                 .addTemporalMarker(()->{// First stack cone
                     drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_FIVE_CONES - 80);
                 })
-                .setAccelConstraint(SampleMecanumDrive.getAccelerationConstraint(MAX_ACCEL/2))
-                .splineTo(new Vector2d(-9.5, -49), Math.toRadians(179.9))
+//                .setVelConstraint(SampleMecanumDrive.getVelocityConstraint(MAX_VEL))
+                .splineTo(new Vector2d(-11, -49.5), Math.toRadians(-179.9))
                 .addTemporalMarker(() -> {
                     drive.closeClaw();
                 })
@@ -53,16 +54,77 @@ public class MyTestAuto extends LinearOpMode {
                 .addTemporalMarker(()->{
                     drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_HIGH_JUNCTION);
                 })
-                .lineToLinearHeading(new Pose2d(-2, -31, Math.toRadians(0)))
+                .splineTo(new Vector2d(-26, -31), Math.toRadians(0))
                 .addTemporalMarker(() -> {
                     drive.openClaw();
                 })
                 .waitSeconds(0.3)
                 .addTemporalMarker(()->{// Second stack cone
                     drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_FOUR_CONES - 80);
-                });
+                })
+                .splineTo(new Vector2d(-9.5, -49.5), Math.toRadians(-179.9))
+                .addTemporalMarker(() -> {
+                    drive.closeClaw();
+                })
+                .waitSeconds(0.3)
+                .addTemporalMarker(()->{
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_HIGH_JUNCTION);
+                })
+                .splineTo(new Vector2d(-26, -31), Math.toRadians(0))
+                .addTemporalMarker(() -> {
+                    drive.openClaw();
+                })
+                .waitSeconds(0.3)
+                .addTemporalMarker(()->{// Second stack cone
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_THREE_CONES - 80);
+                })
+                .splineTo(new Vector2d(-9.5, -49.5), Math.toRadians(-179.9))
+                .addTemporalMarker(() -> {
+                    drive.closeClaw();
+                })
+                .waitSeconds(0.3)
+                .addTemporalMarker(()->{
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_HIGH_JUNCTION);
+                })
+                .splineTo(new Vector2d(-26, -31), Math.toRadians(0))
+                .addTemporalMarker(() -> {
+                    drive.openClaw();
+                })
+                .waitSeconds(0.3)
+                .addTemporalMarker(()->{// Second stack cone
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_TWO_CONES - 80);
+                })
+                .splineTo(new Vector2d(-9.5, -49.5), Math.toRadians(-179.9))
+                .addTemporalMarker(() -> {
+                    drive.closeClaw();
+                })
+                .waitSeconds(0.3)
+                .addTemporalMarker(()->{
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_HIGH_JUNCTION);
+                })
+                .splineTo(new Vector2d(-26, -31), Math.toRadians(0))
+                .addTemporalMarker(() -> {
+                    drive.openClaw();
+                })
+                .waitSeconds(0.3)
+                .addTemporalMarker(()->{// Second stack cone
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_ONE_CONES - 80);
+                })
+                .splineTo(new Vector2d(-9.5, -49.5), Math.toRadians(-179.9))
+                .addTemporalMarker(() -> {
+                    drive.closeClaw();
+                })
+                .waitSeconds(0.3)
+                .addTemporalMarker(()->{
+                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_HIGH_JUNCTION);
+                })
+                .splineTo(new Vector2d(-26, -31), Math.toRadians(0))
+                .addTemporalMarker(() -> {
+                    drive.openClaw();
+                })
+                .waitSeconds(0.3);
 //        if(position == SleevePosition.LEFT){
-////            trajSeq = trajSeqBuilder.splineTo(new Vector2d(-6,-6), Math.toRadians(90))
+// //            trajSeq = trajSeqBuilder.splineTo(new Vector2d(-6,-6), Math.toRadians(90))
 //              trajSeq = trajSeqBuilder.forward(42.75)
 //                      .strafeLeft(3)
 //                .build();
