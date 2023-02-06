@@ -9,8 +9,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
 @TeleOp(name="OrcaTele",group="")
 public class OrcaTele extends OrcaRobot {
-    static final double     DRIVE_SPEED             = 0.65;     // Max driving speed for better distance accuracy.
-    static final double SLIDE_SPEED = 0.75;
+    static final double     DRIVE_SPEED             = 0.75;     // Max driving speed for better distance accuracy.
+    static final double SLIDE_SPEED = 0.85;
 
     /**
      * Power is positive, robot will slide left, otherwise slide right
@@ -102,10 +102,10 @@ public class OrcaTele extends OrcaRobot {
     public void runOpMode() throws InterruptedException {
         setup();
         openClaw();
-//        motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-//        motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorBackLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorBackRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorFrontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        motorFrontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         waitForStart();
 
         if (isStopRequested()) return;

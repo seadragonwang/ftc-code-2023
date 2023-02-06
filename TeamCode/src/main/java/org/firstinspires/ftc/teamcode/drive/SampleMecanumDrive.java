@@ -30,6 +30,8 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.teamcode.AprilTagDetectionExample;
+import org.firstinspires.ftc.teamcode.AprilTagPipeline;
 import org.firstinspires.ftc.teamcode.SleeveDetectionPipeline;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
@@ -61,6 +63,13 @@ import static java.lang.Thread.sleep;
  */
 @Config
 public class SampleMecanumDrive extends MecanumDrive {
+    double fx = 578.272;
+    double fy = 578.272;
+    double cx = 402.145;
+    double cy = 221.506;
+
+    // UNITS ARE METERS
+    double tagsize = 0.166;
     public static PIDCoefficients TRANSLATIONAL_PID = new PIDCoefficients(8, 0, 0);
     public static PIDCoefficients HEADING_PID = new PIDCoefficients(8, 0, 0);
 
@@ -82,7 +91,7 @@ public class SampleMecanumDrive extends MecanumDrive {
 
     private BNO055IMU imu;
     private VoltageSensor batteryVoltageSensor;
-    public SleeveDetectionPipeline pipeline   = null;
+    public AprilTagPipeline pipeline   = null;
     protected DcMotorEx raise;
     protected Servo claw;
     protected Servo claw2;
@@ -126,7 +135,8 @@ public class SampleMecanumDrive extends MecanumDrive {
                  */
             }
         });
-        pipeline = new SleeveDetectionPipeline();
+
+        pipeline = new AprilTagPipeline(tagsize, fx, fy, cx, cy);
         webcam.setPipeline(pipeline);
         // TODO: If the hub containing the IMU you are using is mounted so that the "REV" logo does
         // not face up, remap the IMU axes so that the z-axis points upward (normal to the floor.)
@@ -159,7 +169,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         claw2 = hardwareMap.servo.get("claw2");
         rightRear = hardwareMap.get(DcMotorEx.class, "backRight");
         rightFront = hardwareMap.get(DcMotorEx.class, "frontRight");
-        leftSensor = hardwareMap.get(DistanceSensor.class, "leftSensor");
+//        leftSensor = hardwareMap.get(DistanceSensor.class, "leftSensor");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -232,6 +242,7 @@ public class SampleMecanumDrive extends MecanumDrive {
         followTrajectoryAsync(trajectory);
         waitForIdle();
     }
+
 
     public void followTrajectorySequenceAsync(TrajectorySequence trajectorySequence) {
         trajectorySequenceRunner.followTrajectorySequenceAsync(trajectorySequence);

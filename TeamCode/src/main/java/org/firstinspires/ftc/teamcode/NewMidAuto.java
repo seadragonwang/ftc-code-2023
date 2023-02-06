@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.AprilTagDetectionExample.FEET_PER_METER;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
 
@@ -16,19 +17,20 @@ import org.openftc.apriltag.AprilTagDetection;
 
 import java.util.ArrayList;
 
-@Autonomous(name="MediumAuto")
-public class MediumAuto extends LinearOpMode {
+@Autonomous(name="NewMidAuto")
+public class NewMidAuto extends LinearOpMode {
     SleevePosition position;
     AprilTagDetection tagOfInterest = null;
     boolean tagFound = false;
     static final double FEET_PER_METER = 3.28084;
+
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.openClaw();
-        waitForStart();
         ArrayList<AprilTagDetection> currentDetections = drive.pipeline.getLatestDetections();
 //        position = drive.pipeline.getLatestDetections();
+        waitForStart();
         for (AprilTagDetection tag : currentDetections) {
             if (tag.id == 1 || tag.id == 2 || tag.id == 3) {
                 tagOfInterest = tag;
@@ -38,7 +40,10 @@ public class MediumAuto extends LinearOpMode {
         }
         if (tagFound) {
             telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
-            tagToTelemetry(tagOfInterest);
+            telemetry.addData("tag id", tagOfInterest.id);
+//            tagToTelemetry(tagOfInterest);
+            telemetry.update();
+            sleep(50000);
         } else {
             telemetry.addLine("Don't see tag of interest :(");
 
@@ -46,8 +51,10 @@ public class MediumAuto extends LinearOpMode {
                 telemetry.addLine("(The tag has never been seen)");
             } else {
                 telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
-                tagToTelemetry(tagOfInterest);
+                telemetry.update();
             }
+//            waitForStart();
+
             telemetry.addData("pos", position);
             telemetry.update();
             Pose2d startPos = new Pose2d(-62, -28, 0);
@@ -142,16 +149,17 @@ public class MediumAuto extends LinearOpMode {
                         drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_MEDIUM_JUNCTION);
                     })
                     .waitSeconds(0.2)
-                    .lineToLinearHeading(new Pose2d(-10.95, -12.5, Math.toRadians(90)))
+                    .lineToLinearHeading(new Pose2d(-10.75, -12.3, Math.toRadians(90)))
                     .waitSeconds(0.5)
                     .addTemporalMarker(() -> {
                         drive.openClaw();
                     })
-                    .waitSeconds(0.1);
+                    .waitSeconds(0.1)
+                    .strafeRight(1.5);
 //                .addTemporalMarker(()->{// First stack cone
 //                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_FIVE_CONES - 80);
 //                })
-////                .setAccelConstraint(SampleMecanumDrive.getAccelerationConstraint(MAX_ACCEL/2))
+//                .setAccelConstraint(SampleMecanumDrive.getAccelerationConstraint(MAX_ACCEL/2))
 ////                .splineTo(new Vector2d(-9.5, -49), Math.toRadians(179.9))
 //
 ////                .splineTo(new Vector2d(-8.39, -31.01), Math.toRadians(-165.53))
@@ -172,34 +180,36 @@ public class MediumAuto extends LinearOpMode {
 //                .addTemporalMarker(()->{// Second stack cone
 //                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_FOUR_CONES - 80);
 //                });
-//        if(position == SleevePosition.LEFT){
+            if (tagOfInterest.id == 1) {
 ////            trajSeq = trajSeqBuilder.splineTo(new Vector2d(-6,-6), Math.toRadians(90))
-//              trajSeq = trajSeqBuilder.forward(42.75)
-//                      .strafeLeft(3)
-//                .build();
-//        }else if(position == SleevePosition.RIGHT){
-//            trajSeq = trajSeqBuilder.back(5)
-//                    .build();
-//        }else{
-//            trajSeq = trajSeqBuilder.forward(19)
-//                    .build();
+                trajSeq = trajSeqBuilder.back(30)
+//                      .back(20)
+                        .build();
+            } else if (tagOfInterest.id == 3) {
+                trajSeq = trajSeqBuilder.forward(42)
+                        .build();
+            } else {
+                trajSeq = trajSeqBuilder.forward(10)
+                        .build();
 //                    }
-            trajSeq = trajSeqBuilder.build();
+                trajSeq = trajSeqBuilder.build();
 
-            if (isStopRequested()) return;
+                if (isStopRequested()) return;
 //        SleevePosition position = pipeline.getAnalysis();
-            drive.followTrajectorySequence(trajSeq);
+                drive.followTrajectorySequence(trajSeq);
+
+            }
 
         }
-    }
-    void tagToTelemetry(AprilTagDetection detection)
-    {
-        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
-        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
-        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
-        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
-        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
-        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
-        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+//    void tagToTelemetry(AprilTagDetection detection)
+//    {
+//        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+//        telemetry.addLine(String.format("Translation X: %.2f feet", detection.pose.x*FEET_PER_METER));
+//        telemetry.addLine(String.format("Translation Y: %.2f feet", detection.pose.y*FEET_PER_METER));
+//        telemetry.addLine(String.format("Translation Z: %.2f feet", detection.pose.z*FEET_PER_METER));
+//        telemetry.addLine(String.format("Rotation Yaw: %.2f degrees", Math.toDegrees(detection.pose.yaw)));
+//        telemetry.addLine(String.format("Rotation Pitch: %.2f degrees", Math.toDegrees(detection.pose.pitch)));
+//        telemetry.addLine(String.format("Rotation Roll: %.2f degrees", Math.toDegrees(detection.pose.roll)));
+//    }
     }
 }
