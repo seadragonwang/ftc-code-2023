@@ -29,7 +29,6 @@ import org.openftc.apriltag.AprilTagDetection;
 import org.openftc.easyopencv.OpenCvCamera;
 import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvInternalCamera;
 
 import java.util.ArrayList;
 
@@ -53,8 +52,9 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
     // UNITS ARE METERS
     double tagsize = 0.166;
 
-    int ID_TAG_OF_INTEREST = 18; // Tag ID 18 from the 36h11 family
-
+    int LEFT = 1; // Tag ID 18 from the 36h11 family
+    int CENTER = 2;
+    int RIGHT = 3;
     AprilTagDetection tagOfInterest = null;
 
     @Override
@@ -96,7 +96,7 @@ public class AprilTagAutonomousInitDetectionExample extends LinearOpMode
 
                 for(AprilTagDetection tag : currentDetections)
                 {
-                    if(tag.id == ID_TAG_OF_INTEREST)
+                    if(tag.id == LEFT || tag.id == CENTER || tag.id == RIGHT)
                     {
                         tagOfInterest = tag;
                         tagFound = true;

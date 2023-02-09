@@ -129,7 +129,7 @@ public class SleeveDetectionPipeline extends OpenCvPipeline
 //
         Bitmap bmp2 = Bitmap.createBitmap(640, 480, Bitmap.Config.ARGB_8888);
         Utils.matToBitmap(firstFrame, bmp2);
-        saveBitmap(bmp2);
+//        saveBitmap(bmp2);
         inputToYCrCb(firstFrame);
 //
 //            Core.extractChannel(YCrCb, R, 0);
@@ -210,7 +210,7 @@ public class SleeveDetectionPipeline extends OpenCvPipeline
                 avgg = (int) Core.mean(region_g).val[0];
                 avgb = (int) Core.mean(region_b).val[0];
                 RobotLog.i(String.join(",", Integer.toString(avgr), Integer.toString(avgg), Integer.toString(avgb)));
-                System.out.println(String.join(",", Integer.toString(avgr), Integer.toString(avgg), Integer.toString(avgb)));
+//                System.out.println(String.join(",", Integer.toString(avgr), Integer.toString(avgg), Integer.toString(avgb)));
                 int delta = avgr-avgg;
                 if(avgb > avgg && avgb > avgr){
                     position = SleevePosition.LEFT;
