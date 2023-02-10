@@ -30,6 +30,7 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.AprilTagDetectionExample;
 import org.firstinspires.ftc.teamcode.AprilTagPipeline;
 import org.firstinspires.ftc.teamcode.SleeveDetectionPipeline;
@@ -97,6 +98,9 @@ public class SampleMecanumDrive extends MecanumDrive {
     protected Servo claw2;
     protected OpenCvCamera    webcam        = null;
     protected DistanceSensor leftSensor;
+    protected DistanceSensor backSensor;
+    protected DistanceSensor rightFrontSensor;
+    protected DistanceSensor rightBackSensor;
 
     public SampleMecanumDrive(HardwareMap hardwareMap) {
         super(kV, kA, kStatic, TRACK_WIDTH, TRACK_WIDTH, LATERAL_MULTIPLIER);
@@ -169,7 +173,10 @@ public class SampleMecanumDrive extends MecanumDrive {
         claw2 = hardwareMap.servo.get("claw2");
         rightRear = hardwareMap.get(DcMotorEx.class, "backRight");
         rightFront = hardwareMap.get(DcMotorEx.class, "frontRight");
-//        leftSensor = hardwareMap.get(DistanceSensor.class, "leftSensor");
+        leftSensor = hardwareMap.get(DistanceSensor.class, "leftSensor");
+        backSensor = hardwareMap.get(DistanceSensor.class, "backSensor");
+        rightFrontSensor = hardwareMap.get(DistanceSensor.class, "rightFrontSensor");
+        rightBackSensor = hardwareMap.get(DistanceSensor.class, "rightBackSensor");
 
         motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
 
@@ -376,5 +383,18 @@ public class SampleMecanumDrive extends MecanumDrive {
     public void closeClaw(){
         claw.setPosition(0.65);
         claw2.setPosition(0.35);
+    }
+    public double getLeftDistance(){
+        return leftSensor.getDistance(DistanceUnit.INCH);
+    }
+    public double getBackDistance(){
+        return backSensor.getDistance(DistanceUnit.INCH);
+    }
+
+    public double getRightFrontDistance(){
+        return rightFrontSensor.getDistance(DistanceUnit.INCH);
+    }
+    public double getRightBackDistance(){
+        return rightBackSensor.getDistance(DistanceUnit.INCH);
     }
 }
