@@ -1,5 +1,8 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.OrcaRobot.LEFT;
+import static org.firstinspires.ftc.teamcode.OrcaRobot.CENTER;
+import static org.firstinspires.ftc.teamcode.OrcaRobot.RIGHT;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
 
@@ -13,13 +16,19 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.drive.SampleMecanumDrive;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequence;
 import org.firstinspires.ftc.teamcode.trajectorysequence.TrajectorySequenceBuilder;
+import org.openftc.apriltag.AprilTagDetection;
+
+import java.util.ArrayList;
 
 @Autonomous(name="MediumSensorAuto")
 public class MediumSensorAuto extends LinearOpMode {
-    SleevePosition position;
 
     public final static double DIST_BETWEEN_SENSORS = 0.59;
-
+    AprilTagDetection tagOfInterest = null;
+    void tagToTelemetry(AprilTagDetection detection)
+    {
+        telemetry.addLine(String.format("\nDetected tag ID=%d", detection.id));
+    }
     public double [] calculateDistToHighJunction(double sensor1ToJunction, double sensor2ToJunction){
         double cosA = (sensor2ToJunction*sensor2ToJunction + DIST_BETWEEN_SENSORS*DIST_BETWEEN_SENSORS - sensor1ToJunction*sensor1ToJunction)/(2 * DIST_BETWEEN_SENSORS * sensor2ToJunction);
         double[] dist = new double[2];
@@ -36,7 +45,18 @@ public class MediumSensorAuto extends LinearOpMode {
         dist[0] = Math.sqrt(sensor1ToJunction*sensor1ToJunction - dist[1]*dist[1]);
         return dist;
     }
-
+    private void printDistanceTelemetry(SampleMecanumDrive drive){
+        telemetry.addData("left distance in inches", drive.getLeftDistance());
+        telemetry.addData("left front distance in inches", drive.getLeftFrontDistance());
+        telemetry.addData("back distance in inches", drive.getBackDistance());
+        telemetry.addData("right front distance in inches", drive.getRightFrontDistance());
+        telemetry.addData("right back distance in inches", drive.getRightBackDistance());
+        telemetry.update();
+        RobotLog.i("left distance in inches" + drive.getLeftDistance());
+        RobotLog.i("back distance in inches" + drive.getBackDistance());
+        RobotLog.i("right front distance in inches" + drive.getRightFrontDistance());
+        RobotLog.i("right back distance in inches" + drive.getRightBackDistance());
+    }
     public double [] calculateDistToLowJunction(double sensor1ToJunction, double sensor2ToJunction){
         double cosA = (sensor2ToJunction*sensor2ToJunction + DIST_BETWEEN_SENSORS*DIST_BETWEEN_SENSORS - sensor1ToJunction*sensor1ToJunction)/(2 * DIST_BETWEEN_SENSORS * sensor2ToJunction);
         double[] dist = new double[2];
@@ -58,10 +78,51 @@ public class MediumSensorAuto extends LinearOpMode {
     public void runOpMode() throws InterruptedException {
         SampleMecanumDrive drive = new SampleMecanumDrive(hardwareMap);
         drive.openClaw();
+        while (!isStarted() && !isStopRequested()) {
+            ArrayList<AprilTagDetection> currentDetections = drive.pipeline.getLatestDetections();
+
+            if (currentDetections.size() != 0) {
+                boolean tagFound = false;
+
+                for (AprilTagDetection tag : currentDetections) {
+                    if (tag.id == LEFT || tag.id == CENTER || tag.id == RIGHT) {
+                        tagOfInterest = tag;
+                        tagFound = true;
+                        break;
+                    }
+                }
+
+                if (tagFound) {
+                    telemetry.addLine("Tag of interest is in sight!\n\nLocation data:");
+                    tagToTelemetry(tagOfInterest);
+                    telemetry.update();
+                } else {
+                    telemetry.addLine("Don't see tag of interest :(");
+
+                    if (tagOfInterest == null) {
+                        telemetry.addLine("(The tag has never been seen)");
+                    } else {
+                        telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+                        tagToTelemetry(tagOfInterest);
+                    }
+                    telemetry.update();
+                }
+
+            } else {
+                telemetry.addLine("Don't see tag of interest :(");
+
+                if (tagOfInterest == null) {
+                    telemetry.addLine("(The tag has never been seen)");
+                } else {
+                    telemetry.addLine("\nBut we HAVE seen the tag before; last seen at:");
+                    tagToTelemetry(tagOfInterest);
+                }
+                telemetry.update();
+            }
+        }
+        printDistanceTelemetry(drive);
         waitForStart();
-        position = drive.pipeline.getAnalysis();
-        telemetry.addData("pos", position);
-        telemetry.update();
+
         Pose2d startPos = new Pose2d(-62, -28, 0);
         drive.setPoseEstimate(startPos);
 
@@ -101,7 +162,7 @@ public class MediumSensorAuto extends LinearOpMode {
                 .build();
         drive.followTrajectorySequence(trajSeq2);
         double leftDist = drive.getLeftDistance();
-        backDist = drive.getBackDistance();
+        double leftFrontDist = drive.getLeftFrontDistance();
 
         yStackCones = yStackCones + 10 - leftDist;
         TrajectorySequence trajSeq3 = drive.trajectorySequenceBuilder(trajSeq2.end())
@@ -261,150 +322,26 @@ public class MediumSensorAuto extends LinearOpMode {
                     drive.openClaw();
                 })
                 .waitSeconds(0.2)
+                .addTemporalMarker(() -> {
+                    drive.raiseSlider(0);
+                })
+                .waitSeconds(0.2)
                 .build();
         drive.followTrajectorySequence(trajSeq14);
+        TrajectorySequenceBuilder trajectorySequenceBuilder = drive.trajectorySequenceBuilder(trajSeq14.end());
 
-//                .addTemporalMarker(() -> {
-//                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_ONE_CONES);
-//                })
-//                .lineToLinearHeading(new Pose2d(xStackCones, yStackCones, Math.toRadians(180)))
-//                .build();
-//        drive.followTrajectorySequence(trajSeq14);
-//        leftDist = drive.getLeftDistance();
-//        TrajectorySequence trajSeq15 = drive.trajectorySequenceBuilder(trajSeq14.end())
-//                .strafeRight(10 - leftDist)
-//                .addTemporalMarker(() -> {
-//                    drive.closeClaw();
-//                })
-//                .waitSeconds(0.2)
-//                .addTemporalMarker(() -> {
-//                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_MEDIUM_JUNCTION);
-//                })
-//                .lineToLinearHeading(new Pose2d(xMediumJunction, yMediumJunction, Math.toRadians(90)))
-//                .build();
-//        drive.followTrajectorySequence(trajSeq15);
-//        backDist = drive.getBackDistance();
-//        printDistanceTelemetry(drive);
-//        TrajectorySequence trajSeq16 = drive.trajectorySequenceBuilder(trajSeq15.end())
-//                .forward(40.5 - backDist)
-//                .build();
-//        drive.followTrajectorySequence(trajSeq16);
-//        leftDist = drive.getLeftDistance();
-//        rightFrontDist = drive.getRightFrontDistance();
-//        TrajectorySequence trajSeq17 = drive.trajectorySequenceBuilder(trajSeq16.end())
-//                .strafeLeft(5.4-rightFrontDist)
-//                .addTemporalMarker(() -> {
-//                    drive.openClaw();
-//                })
-//                .waitSeconds(0.2)
-//                .build();
-//        drive.followTrajectorySequence(trajSeq17);
-        //                .addTemporalMarker(() -> {
-//                    drive.openClaw();
-//                })
-//                .waitSeconds(0.2)
-//                .addTemporalMarker(() -> {
-//                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_FOUR_CONES);
-//                })
-//                .lineToLinearHeading(new Pose2d(xStackCones, yStackCones, Math.toRadians(180)))
-//                .waitSeconds(0.3)
-//                .addTemporalMarker(() -> {
-//                    drive.closeClaw();
-//                })
-//                .waitSeconds(0.2)
-//                .addTemporalMarker(() -> {
-//                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_MEDIUM_JUNCTION);
-//                })
-//                .lineToLinearHeading(new Pose2d(xMediumJunction, yMediumJunction, Math.toRadians(90)))
-//                .waitSeconds(0.2)
-//                .addTemporalMarker(() -> {
-//                    drive.openClaw();
-//                })
-//                .waitSeconds(0.2)
-//                .addTemporalMarker(() -> {
-//                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_THREE_CONES);
-//                })
-//                .lineToLinearHeading(new Pose2d(xStackCones, yStackCones, Math.toRadians(180)))
-//                .waitSeconds(0.3)
-//                .addTemporalMarker(() -> {
-//                    drive.closeClaw();
-//                })
-//                .waitSeconds(0.2)
-//                .addTemporalMarker(() -> {
-//                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_MEDIUM_JUNCTION);
-//                })
-//                .lineToLinearHeading(new Pose2d(xMediumJunction+1, yMediumJunction+1, Math.toRadians(90)))
-//                .addTemporalMarker(() -> {
-//                    drive.openClaw();
-//                })
-//                .waitSeconds(0.2)
-//                .addTemporalMarker(() -> {
-//                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_TWO_CONES);
-//                })
-//                .lineToLinearHeading(new Pose2d(xStackCones, yStackCones, Math.toRadians(180)))
-//                .waitSeconds(0.4)
-//                .addTemporalMarker(() -> {
-//                    drive.closeClaw();
-//                })
-//                .waitSeconds(0.2)
-//                .addTemporalMarker(() -> {
-//                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_MEDIUM_JUNCTION);
-//                })
-//                .lineToLinearHeading(new Pose2d(xMediumJunction+1, yMediumJunction+1, Math.toRadians(90)))
-//                .waitSeconds(0.2)
-//                .addTemporalMarker(() -> {
-//                    drive.openClaw();
-//                })
-//                .waitSeconds(0.2)
-//                .addTemporalMarker(() -> {
-//                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_ONE_CONES);
-//                })
-//                .lineToLinearHeading(new Pose2d(xStackCones, yStackCones, Math.toRadians(180)))
-//                .waitSeconds(0.4)
-//                .addTemporalMarker(() -> {
-//                    drive.closeClaw();
-//                })
-//                .waitSeconds(0.3)
-//                .addTemporalMarker(() -> {
-//                    drive.raiseSlider(OrcaRobot.ARM_COUNTS_FOR_MEDIUM_JUNCTION);
-//                })
-//                .lineToLinearHeading(new Pose2d(xMediumJunction+1, yMediumJunction+1, Math.toRadians(90)))
-//                .waitSeconds(0.2)
-//                .addTemporalMarker(() -> {
-//                    drive.openClaw();
-//                })
-//                .addTemporalMarker(() -> {
-//                    drive.raiseSlider(0);
-//                })
-//                .build();
-//        drive.followTrajectorySequence(trajSeq3);
-//        if(position == SleevePosition.LEFT){
-////            trajSeq = trajSeqBuilder.splineTo(new Vector2d(-6,-6), Math.toRadians(90))
-//              trajSeq = trajSeqBuilder.forward(42.75)
-//                      .strafeLeft(3)
-//                .build();
-//        }else if(position == SleevePosition.RIGHT){
-//            trajSeq = trajSeqBuilder.back(5)
-//                    .build();
-//        }else{
-//            trajSeq = trajSeqBuilder.forward(19)
-//                    .build();
-//                    }
-
+        if(tagOfInterest.id ==LEFT){
+            trajectorySequenceBuilder = trajectorySequenceBuilder.forward(12);
+        }else if(tagOfInterest.id == CENTER){
+            trajectorySequenceBuilder = trajectorySequenceBuilder.back(12);
+        }else if(tagOfInterest.id == RIGHT){
+            trajectorySequenceBuilder = trajectorySequenceBuilder.back(36);
+        }else {
+            trajectorySequenceBuilder = trajectorySequenceBuilder.forward(12);
+        }
+        drive.followTrajectorySequence(trajectorySequenceBuilder.build());
         if(isStopRequested()) return;
-//        SleevePosition position = pipeline.getAnalysis();
 
 
-    }
-    private void printDistanceTelemetry(SampleMecanumDrive drive){
-        telemetry.addData("left distance in inches", drive.getLeftDistance());
-        telemetry.addData("back distance in inches", drive.getBackDistance());
-        telemetry.addData("right front distance in inches", drive.getRightFrontDistance());
-        telemetry.addData("right back distance in inches", drive.getRightBackDistance());
-        telemetry.update();
-        RobotLog.i("left distance in inches" + drive.getLeftDistance());
-        RobotLog.i("back distance in inches" + drive.getBackDistance());
-        RobotLog.i("right front distance in inches" + drive.getRightFrontDistance());
-        RobotLog.i("right back distance in inches" + drive.getRightBackDistance());
     }
 }

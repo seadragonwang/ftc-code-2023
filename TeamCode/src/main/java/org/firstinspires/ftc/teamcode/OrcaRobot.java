@@ -44,6 +44,9 @@ public abstract class OrcaRobot extends LinearOpMode {
     public static final int ARM_COUNTS_FOR_THREE_CONES = -(int) (92 * ARM_COUNTS_PER_MILLIMETER);
     public static final int ARM_COUNTS_FOR_TWO_CONES = -(int) (62 * ARM_COUNTS_PER_MILLIMETER);
     public static final int ARM_COUNTS_FOR_ONE_CONES = -(int) (12 * ARM_COUNTS_PER_MILLIMETER);
+    public static final int LEFT = 1; // Tag ID 18 from the 36h11 family
+    public static final int CENTER = 2;
+    public static final int RIGHT = 3;
     protected DcMotorEx motorFrontLeft;
     protected DcMotorEx motorBackLeft;
     protected DcMotorEx motorFrontRight;
